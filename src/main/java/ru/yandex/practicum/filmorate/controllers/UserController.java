@@ -21,15 +21,15 @@ public class UserController {
 
     @GetMapping
     public Collection<User> findAll() {
-        log.info("Текущее количество пользоваелей: " + users.size());
+        log.info(userMessage(UserMessages.CURRENT_USERS_CONDITION) + users.size());
         return users.values();
     }
 
     @PostMapping
     public User create(@RequestBody User user) {
         if (!userValidation(user)) {
-            log.debug("Некоректно заполнена форма регистрации учетной записи");
-            throw new ValidationException("Некоректно заполнена форма регистрации учетной записи");
+            log.debug(userMessage(UserMessages.INCORRECT_USER_FORM));
+            throw new ValidationException(userMessage(UserMessages.INCORRECT_USER_FORM));
         }
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
@@ -38,15 +38,15 @@ public class UserController {
             user.setId(setId());
         }
         users.put(user.getId(), user);
-        log.info("Пользователь " + user + " успешно добавлен");
+        log.info(userMessage(UserMessages.USER_SUCCESS_ADDED) + user);
         return user;
     }
 
     @PutMapping
     public User update(@RequestBody User user) {
         if (!userValidation(user)) {
-            log.debug("Некоректно заполнена форма обновления учетной записи");
-            throw new ValidationException("Некоректно заполнена форма обновления учетной записи");
+            log.debug(userMessage(UserMessages.INCORRECT_UPDATE_USER_FORM));
+            throw new ValidationException(userMessage(UserMessages.INCORRECT_UPDATE_USER_FORM));
         }
         if (user.getId() == 0) {
             user.setId(setId());
@@ -56,10 +56,10 @@ public class UserController {
         }
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
-            log.info("Пользователь " + user + " успешно обновлен");
+            log.info(userMessage(UserMessages.USER_SUCCESS_UPDATED)+ user);
         } else {
-            log.debug("Такого пользователя нет в списке");
-            throw new ValidationException("Такого пользователя нет в списке");
+            log.debug(userMessage(UserMessages.USER_IS_NOT_IN_LIST));
+            throw new ValidationException(userMessage(UserMessages.USER_IS_NOT_IN_LIST));
         }
         return user;
     }
@@ -81,4 +81,24 @@ public class UserController {
     public Map<Integer, User> getUsers() {
         return users;
     }
+
+    public String userMessage(UserMessages um){
+        switch (um){
+            case CURRENT_USERS_CONDITION:return "Текущее количество пользоваелей: ";
+            case USER_IS_NOT_IN_LIST:return "Такого пользователя нет в списке";
+            case INCORRECT_USER_FORM:return "Некоректно заполнена форма регистрации учетной записи";
+            case INCORRECT_UPDATE_USER_FORM:return "Некоректно заполнена форма обновления учетной записи";
+            case USER_SUCCESS_ADDED:return "Успешно добавлен пользователь: ";
+            case USER_SUCCESS_UPDATED:return "Успешно обновлена учетная запись пользователя: ";
+            default:return "Ошибка неизвестного рода";
+        }
+    }
+}
+enum UserMessages {
+    INCORRECT_USER_FORM,
+    INCORRECT_UPDATE_USER_FORM,
+    USER_IS_NOT_IN_LIST,
+    CURRENT_USERS_CONDITION,
+    USER_SUCCESS_ADDED,
+    USER_SUCCESS_UPDATED
 }
