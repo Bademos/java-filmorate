@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -11,22 +12,23 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
+@Slf4j
 @RestController
+@RequestMapping("/films")
 public class FilmController {
-    private final static Logger log = LoggerFactory.getLogger(FilmController.class);
-    private Map<Integer, Film> films = new HashMap<>();
-    int id = 0;
+    private final Map<Integer, Film> films = new HashMap<>();
+    private int id = 0;
 
-    @GetMapping("/films")
+    @GetMapping
     public Collection<Film> findAll() {
         log.info("Текущее количество фильмов: " + films.size());
         return films.values();
     }
 
-    @PostMapping(value = "/films")
+    @PostMapping
     public Film create(@RequestBody Film film) {
         if (!filmValidation(film)) {
-            log.info("Некоректно заполнена форма  фильма");
+            log.debug("Некоректно заполнена форма  фильма");
             throw new ValidationException("Некоректно заполнена форма  фильма");
         }
         if ((film.getId() <= id)) {
@@ -37,10 +39,10 @@ public class FilmController {
         return film;
     }
 
-    @PutMapping(value = "/films")
+    @PutMapping
     public Film update(@RequestBody Film film) {
         if (!filmValidation(film)) {
-            log.info("Некоректно заполнена форма  фильма");
+            log.debug("Некоректно заполнена форма  фильма");
 
             throw new ValidationException("Некоректно заполнена форма");
         }
@@ -50,7 +52,7 @@ public class FilmController {
             log.info("Успешно добавлен фильм: " + film);
 
         } else {
-            log.info("Фильма нет в списке");
+            log.debug("Фильма нет в списке");
             throw new ValidationException("Фильма нет в списке");
         }
         return film;
