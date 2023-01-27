@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import java.time.Duration;
 import java.time.LocalDate;
