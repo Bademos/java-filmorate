@@ -3,7 +3,10 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+<<<<<<< HEAD
 import lombok.Value;
+=======
+>>>>>>> 200a7cdd93df3802839354174c96ffb7c08ba50a
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import javax.persistence.Entity;

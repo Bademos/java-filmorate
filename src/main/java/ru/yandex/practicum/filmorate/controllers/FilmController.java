@@ -1,7 +1,10 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+<<<<<<< HEAD
 import org.springframework.beans.factory.annotation.Value;
+=======
+>>>>>>> 200a7cdd93df3802839354174c96ffb7c08ba50a
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.enums.FilmMessages;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
@@ -28,7 +31,11 @@ public class FilmController {
     }
 
     @PostMapping
+<<<<<<< HEAD
     public Film create(@Valid @RequestBody Film film) {
+=======
+    public Film create(@RequestBody Film film) {
+>>>>>>> 200a7cdd93df3802839354174c96ffb7c08ba50a
         validate(film,FilmMessages.INCORRECT_FILM_FORM);
         film.setId(setId());
         films.put(film.getId(), film);
@@ -37,7 +44,11 @@ public class FilmController {
     }
 
     @PutMapping
+<<<<<<< HEAD
     public Film update(@Valid @RequestBody Film film) {
+=======
+    public Film update(@RequestBody Film film) {
+>>>>>>> 200a7cdd93df3802839354174c96ffb7c08ba50a
         validate(film,FilmMessages.INCORRECT_UPDATE_FILM_FORM);
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
@@ -64,9 +75,15 @@ public class FilmController {
 
 
     public boolean filmValidation(Film film) {
+<<<<<<< HEAD
         return  !(film.getName() == null || film.getName().isBlank() ||
                 film.getDescription().length() > LIMIT_LENGTH_OF_DESCRIPTION ||
                 film.getReleaseDate().isBefore(LIMIT_DATE)||
+=======
+        return !(film.getName() == null || film.getName().isBlank() ||
+                film.getDescription().length() > LIMIT_LENGTH_OF_DESCRIPTION ||
+                film.getReleaseDate().isBefore(LIMIT_DATE) ||
+>>>>>>> 200a7cdd93df3802839354174c96ffb7c08ba50a
                 film.getDuration() < 0);
     }
 }

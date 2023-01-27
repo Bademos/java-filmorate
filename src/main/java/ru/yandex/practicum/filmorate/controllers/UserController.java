@@ -26,7 +26,11 @@ public class UserController {
     }
 
     @PostMapping
+<<<<<<< HEAD
     public User create(@Valid @RequestBody User user) {
+=======
+    public User create(@RequestBody User user) {
+>>>>>>> 200a7cdd93df3802839354174c96ffb7c08ba50a
         validate(user,UserMessages.INCORRECT_USER_FORM);
 
         if (user.getName() == null || user.getName().isBlank()) {
@@ -40,7 +44,11 @@ public class UserController {
     }
 
     @PutMapping
+<<<<<<< HEAD
     public User update(@Valid @RequestBody User user) {
+=======
+    public User update(@RequestBody User user) {
+>>>>>>> 200a7cdd93df3802839354174c96ffb7c08ba50a
 
         validate(user,UserMessages.INCORRECT_UPDATE_USER_FORM);
 
