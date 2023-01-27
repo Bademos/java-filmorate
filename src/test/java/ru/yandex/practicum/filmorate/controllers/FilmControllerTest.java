@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controllers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import ru.yandex.practicum.filmorate.enums.FilmMessages;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -19,22 +20,18 @@ class  FilmControllerTest {
     }
 
     @Test
-    void findAll() {
-    }
-
-    @Test
     void createVoidNameTest() {
-        Film film = new Film(190,"","impudicus", LocalDate.now().minusYears(14),180);
-
+        Film film = Film.builder().id(190).name("").
+                description("impudicus").releaseDate(LocalDate.now().
+                minusYears(14)).duration(180).build();
         ValidationException ex = assertThrows(ValidationException.class, new Executable() {
             @Override
             public void execute() {
                 fc.create(film);
             }
         });
-        assertEquals("Некоректно заполнена форма  фильма", ex.getMessage());
+        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_FILM_FORM), ex.getMessage());
     }
-
 
     @Test
     void createLongDescriptionTest() {
@@ -65,7 +62,7 @@ class  FilmControllerTest {
                 fc.create(film);
             }
         });
-        assertEquals("Некоректно заполнена форма  фильма", ex.getMessage());
+        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_FILM_FORM), ex.getMessage());
 
     }
     @Test
@@ -78,7 +75,7 @@ class  FilmControllerTest {
                 fc.create(film);
             }
         });
-        assertEquals("Некоректно заполнена форма  фильма", ex.getMessage());
+        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_FILM_FORM), ex.getMessage());
     }
 
     @Test
@@ -91,7 +88,7 @@ class  FilmControllerTest {
                 fc.create(film);
             }
         });
-        assertEquals("Некоректно заполнена форма  фильма", ex.getMessage());
+        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_FILM_FORM), ex.getMessage());
     }
 
     @Test
@@ -106,7 +103,7 @@ class  FilmControllerTest {
             }
         });
 
-        assertEquals("Некоректно заполнена форма", ex.getMessage());
+        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_UPDATE_FILM_FORM), ex.getMessage());
     }
 
     @Test
@@ -141,7 +138,7 @@ class  FilmControllerTest {
                 fc.update(filmUpd);
             }
         });
-        assertEquals("Некоректно заполнена форма", ex.getMessage());
+        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_UPDATE_FILM_FORM), ex.getMessage());
     }
 
     @Test
@@ -156,7 +153,7 @@ class  FilmControllerTest {
                 fc.update(filmUpd);
             }
         });
-        assertEquals("Некоректно заполнена форма", ex.getMessage());
+        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_UPDATE_FILM_FORM), ex.getMessage());
     }
 
     @Test
@@ -171,6 +168,6 @@ class  FilmControllerTest {
                 fc.update(filmUpd);
             }
         });
-        assertEquals("Некоректно заполнена форма", ex.getMessage());
+        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_UPDATE_FILM_FORM), ex.getMessage());
     }
 }
