@@ -16,23 +16,20 @@ import java.util.*;
 @RestController
 @RequestMapping("/films")
 public class FilmController extends Controller<Film>{
-    private final Map<Integer, Film> films = getListOfEntities();
-    private final LocalDate LIMIT_DATE = LocalDate.from(LocalDateTime.of(1895, 12, 28, 0, 0));
-    private final int LIMIT_LENGTH_OF_DESCRIPTION = 200;
+    private static final LocalDate LIMIT_DATE = LocalDate.from(LocalDateTime.of(1895, 12, 28, 0, 0));
+    private static final int LIMIT_LENGTH_OF_DESCRIPTION = 200;
 
     @GetMapping
     @Override
     public Collection<Film> findAll() {
-        log.info(FilmMessages.filmMessage(FilmMessages.CURRENT_CONDITION) + films.size());
-        return films.values();
+        log.info(FilmMessages.filmMessage(FilmMessages.CURRENT_CONDITION) + listOfEntities.size());
+        return listOfEntities.values();
     }
 
     @PostMapping
     @Override
     public Film create(@Valid @RequestBody Film film) {
-        validate(film,FilmMessages.filmMessage(FilmMessages.INCORRECT_FILM_FORM));
-        film.setId(setId());
-        films.put(film.getId(), film);
+        super.create(film);
         log.info(FilmMessages.filmMessage(FilmMessages.FILM_SUCCESS_ADDED) + film);
         return film;
     }
@@ -40,14 +37,7 @@ public class FilmController extends Controller<Film>{
     @PutMapping
     @Override
     public Film update(@Valid @RequestBody Film film) {
-        validate(film,FilmMessages.filmMessage(FilmMessages.INCORRECT_UPDATE_FILM_FORM));
-        if (films.containsKey(film.getId())) {
-            films.put(film.getId(), film);
-            log.info(FilmMessages.filmMessage(FilmMessages.FILM_SUCCESS_UPDATED) + film);
-        } else {
-            log.debug(FilmMessages.filmMessage(FilmMessages.FILM_IS_NOT_IN_LIST));
-            throw new ValidationException(FilmMessages.filmMessage(FilmMessages.FILM_IS_NOT_IN_LIST));
-        }
+        super.update(film);
         return film;
     }
 

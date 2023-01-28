@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.enums.FilmMessages;
 import ru.yandex.practicum.filmorate.enums.UserMessages;
@@ -16,24 +17,19 @@ import java.util.*;
 @RestController
 @RequestMapping("/users")
 public class UserController extends Controller<User>{
-    private final Map<Integer, User> users = getListOfEntities();
 
     @GetMapping
     @Override
     public Collection<User> findAll() {
-        log.info(UserMessages.userMessage(UserMessages.CURRENT_USERS_CONDITION) + users.size());
-        return users.values();
+        log.info(UserMessages.userMessage(UserMessages.CURRENT_USERS_CONDITION) + listOfEntities.size());
+        return listOfEntities.values();
     }
 
     @PostMapping
     @Override
     public User create(@Valid @RequestBody User user) {
-        validate(user,UserMessages.userMessage(UserMessages.INCORRECT_USER_FORM));
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        user.setId(setId());
-        users.put(user.getId(), user);
+        super.create(user);
+        fixVoidName(user);
         log.info(UserMessages.userMessage(UserMessages.USER_SUCCESS_ADDED) + user);
         return user;
     }
@@ -41,17 +37,8 @@ public class UserController extends Controller<User>{
     @PutMapping
     @Override
     public User update( @RequestBody User user) {
-        validate(user,UserMessages.userMessage(UserMessages.INCORRECT_UPDATE_USER_FORM));
-        if (user.getName() == null) {
-            user.setName(user.getLogin());
-        }
-        if (users.containsKey(user.getId())) {
-            users.put(user.getId(), user);
-            log.info(UserMessages.userMessage(UserMessages.USER_SUCCESS_UPDATED)+ user);
-        } else {
-            log.debug(UserMessages.userMessage(UserMessages.USER_IS_NOT_IN_LIST));
-            throw new ValidationException(UserMessages.userMessage(UserMessages.USER_IS_NOT_IN_LIST));
-        }
+        super.update(user);
+        fixVoidName(user);
         return user;
     }
 
@@ -65,7 +52,14 @@ public class UserController extends Controller<User>{
                 user.getBirthday().isAfter(LocalDate.now()));
     }
 
+    public void fixVoidName(User user){
+        if (user.getName() == null) {
+            user.setName(user.getLogin());
+            listOfEntities.put(user.getId(), user);
+        }
+    }
+
     public Map<Integer, User> getUsers() {
-        return users;
+        return listOfEntities;
     }
 }

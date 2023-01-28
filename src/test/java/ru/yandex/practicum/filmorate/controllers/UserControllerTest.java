@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import ru.yandex.practicum.filmorate.enums.UserMessages;
+import ru.yandex.practicum.filmorate.enums.Messages;
+import ru.yandex.practicum.filmorate.enums.Messages;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -29,7 +30,7 @@ class UserControllerTest {
                 uc.create(user);
             }
         });
-        assertEquals(UserMessages.userMessage(UserMessages.INCORRECT_USER_FORM), ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
 
         User user2 = new User(10,"","bademus","vadique", LocalDate.now().minusYears(33));
          ex = assertThrows(ValidationException.class, new Executable() {
@@ -38,7 +39,7 @@ class UserControllerTest {
                 uc.create(user2);
             }
         });
-        assertEquals(UserMessages.userMessage(UserMessages.INCORRECT_USER_FORM), ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
     }
 
     @Test
@@ -50,7 +51,7 @@ class UserControllerTest {
                 uc.create(user);
             }
         });
-        assertEquals(UserMessages.userMessage(UserMessages.INCORRECT_USER_FORM), ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
     }
 
     @Test
@@ -70,7 +71,7 @@ class UserControllerTest {
                 uc.create(user);
             }
         });
-        assertEquals(UserMessages.userMessage(UserMessages.INCORRECT_USER_FORM), ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
     }
 
     @Test
@@ -84,7 +85,7 @@ class UserControllerTest {
                 uc.update(user);
             }
         });
-        assertEquals("Некоректно заполнена форма обновления учетной записи", ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
 
         User user2 = new User(10,"","bademus","vadique", LocalDate.now().minusYears(33));
         ex = assertThrows(ValidationException.class, new Executable() {
@@ -93,7 +94,7 @@ class UserControllerTest {
                 uc.update(user2);
             }
         });
-        assertEquals(UserMessages.userMessage(UserMessages.INCORRECT_UPDATE_USER_FORM), ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
     }
 
     @Test
@@ -107,17 +108,18 @@ class UserControllerTest {
                 uc.update(user);
             }
         });
-        assertEquals(UserMessages.userMessage(UserMessages.INCORRECT_UPDATE_USER_FORM), ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
     }
 
     @Test
     void updateVoidNameTest() {
-        User usr = new User(10,"id@ram.ru","bademus","vadique", LocalDate.now().minusYears(33));
+        User usr = new User(1,"id@ram.ru","bademus","", LocalDate.now().minusYears(33));
         uc.create(usr);
-        int id = 2;
+        int id = 1;
         String login = "bademus";
-        User user = new User(id,"id@ram.ru",login,"", LocalDate.now().minusYears(33));
-        uc.create(user);
+        User user = new User(id,"id@ram.ru",login,null, LocalDate.now().minusYears(33));
+        uc.update(user);
+        System.out.println(uc.getUsers());
         Assertions.assertEquals(login,uc.getUsers().get(id).getName());
     }
 
@@ -132,7 +134,7 @@ class UserControllerTest {
                 uc.update(user);
             }
         });
-        assertEquals(UserMessages.userMessage(UserMessages.INCORRECT_UPDATE_USER_FORM), ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
     }
 
 }

@@ -53,7 +53,6 @@
 			<version>5.7.2</version>
 			<scope>test</scope>
 		</dependency>
-<<<<<<< HEAD
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -65,8 +64,6 @@
 			<version>1.4.197</version>
 			<scope>runtime</scope>
 		</dependency>
-=======
->>>>>>> 200a7cdd93df3802839354174c96ffb7c08ba50a
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>

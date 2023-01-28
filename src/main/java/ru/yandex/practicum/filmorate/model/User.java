@@ -15,14 +15,13 @@ import java.util.Objects;
 @Builder(toBuilder = true)
 @Data
 @AllArgsConstructor
-public class User {
+
+public class User extends Model {
     private int id;
-    @NotNull
     @NotBlank
     @Email
     private String email;
     @NotBlank
-    @NotNull
     private String login;
     private String name;
     @Past

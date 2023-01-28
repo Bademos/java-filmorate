@@ -3,10 +3,13 @@ package ru.yandex.practicum.filmorate.controllers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import ru.yandex.practicum.filmorate.enums.FilmMessages;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import ru.yandex.practicum.filmorate.enums.Messages;
+import ru.yandex.practicum.filmorate.enums.Messages;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,13 +27,16 @@ class  FilmControllerTest {
         Film film = Film.builder().id(190).name("").
                 description("impudicus").releaseDate(LocalDate.now().
                 minusYears(14)).duration(180).build();
+        assertEquals(true, fc.findAll().isEmpty());
+
         ValidationException ex = assertThrows(ValidationException.class, new Executable() {
             @Override
             public void execute() {
                 fc.create(film);
             }
         });
-        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_FILM_FORM), ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
+
     }
 
     @Test
@@ -62,7 +68,7 @@ class  FilmControllerTest {
                 fc.create(film);
             }
         });
-        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_FILM_FORM), ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
 
     }
     @Test
@@ -75,7 +81,7 @@ class  FilmControllerTest {
                 fc.create(film);
             }
         });
-        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_FILM_FORM), ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
     }
 
     @Test
@@ -88,7 +94,7 @@ class  FilmControllerTest {
                 fc.create(film);
             }
         });
-        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_FILM_FORM), ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
     }
 
     @Test
@@ -103,7 +109,7 @@ class  FilmControllerTest {
             }
         });
 
-        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_UPDATE_FILM_FORM), ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
     }
 
     @Test
@@ -138,7 +144,7 @@ class  FilmControllerTest {
                 fc.update(filmUpd);
             }
         });
-        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_UPDATE_FILM_FORM), ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
     }
 
     @Test
@@ -153,7 +159,7 @@ class  FilmControllerTest {
                 fc.update(filmUpd);
             }
         });
-        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_UPDATE_FILM_FORM), ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
     }
 
     @Test
@@ -168,6 +174,6 @@ class  FilmControllerTest {
                 fc.update(filmUpd);
             }
         });
-        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_UPDATE_FILM_FORM), ex.getMessage());
+        assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
     }
 }

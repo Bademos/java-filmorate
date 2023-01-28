@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Value;
+import lombok.*;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import javax.persistence.Entity;
@@ -18,12 +15,12 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 @Builder(toBuilder = true)
-@Data
 @AllArgsConstructor
-public class Film {
+@Data
+
+public class Film extends Model{
     private int id;
     @NotBlank
-    @NotNull
     private String name;
     @Size(max = 200)
     private String description;
