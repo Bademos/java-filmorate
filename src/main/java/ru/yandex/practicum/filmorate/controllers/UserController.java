@@ -15,24 +15,23 @@ import java.util.*;
 @Slf4j
 @RestController
 @RequestMapping("/users")
-public class UserController {
-    private int id = 0;
-    private final Map<Integer, User> users = new HashMap<>();
+public class UserController extends Controller<User>{
+    private final Map<Integer, User> users = getListOfEntities();
 
     @GetMapping
+    @Override
     public Collection<User> findAll() {
         log.info(UserMessages.userMessage(UserMessages.CURRENT_USERS_CONDITION) + users.size());
         return users.values();
     }
 
     @PostMapping
+    @Override
     public User create(@Valid @RequestBody User user) {
-        validate(user,UserMessages.INCORRECT_USER_FORM);
-
+        validate(user,UserMessages.userMessage(UserMessages.INCORRECT_USER_FORM));
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-
         user.setId(setId());
         users.put(user.getId(), user);
         log.info(UserMessages.userMessage(UserMessages.USER_SUCCESS_ADDED) + user);
@@ -40,10 +39,9 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User user) {
-
-        validate(user,UserMessages.INCORRECT_UPDATE_USER_FORM);
-
+    @Override
+    public User update( @RequestBody User user) {
+        validate(user,UserMessages.userMessage(UserMessages.INCORRECT_UPDATE_USER_FORM));
         if (user.getName() == null) {
             user.setName(user.getLogin());
         }
@@ -57,19 +55,8 @@ public class UserController {
         return user;
     }
 
-    public int setId() {
-        id += 1;
-        return id;
-    }
-
-    public void validate (User user, UserMessages message ){
-        if (!userValidation(user)) {
-            log.debug(UserMessages.userMessage(message));
-            throw new ValidationException(UserMessages.userMessage(message));
-        }
-    }
-
-    public boolean userValidation(User user) {
+    @Override
+    public boolean validation(User user) {
         return !(user.getLogin() == null ||
                 user.getLogin().isBlank()||
                 user.getEmail() == null ||

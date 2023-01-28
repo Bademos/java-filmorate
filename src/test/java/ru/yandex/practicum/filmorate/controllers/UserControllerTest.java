@@ -55,7 +55,7 @@ class UserControllerTest {
 
     @Test
     void createVoidNameTest() {
-        int id = 10;
+        int id = 1;
         String login = "bademus";
         User user = new User(id,"id@ram.ru",login,null, LocalDate.now().minusYears(33));
         uc.create(user);
@@ -114,9 +114,9 @@ class UserControllerTest {
     void updateVoidNameTest() {
         User usr = new User(10,"id@ram.ru","bademus","vadique", LocalDate.now().minusYears(33));
         uc.create(usr);
-        int id = 10;
+        int id = 2;
         String login = "bademus";
-        User user = new User(id,"id@ram.ru",login,null, LocalDate.now().minusYears(33));
+        User user = new User(id,"id@ram.ru",login,"", LocalDate.now().minusYears(33));
         uc.create(user);
         Assertions.assertEquals(login,uc.getUsers().get(id).getName());
     }

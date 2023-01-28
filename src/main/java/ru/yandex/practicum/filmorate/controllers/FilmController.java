@@ -15,21 +15,22 @@ import java.util.*;
 @Slf4j
 @RestController
 @RequestMapping("/films")
-public class FilmController {
-    private final Map<Integer, Film> films = new HashMap<>();
-    private int id = 0;
+public class FilmController extends Controller<Film>{
+    private final Map<Integer, Film> films = getListOfEntities();
     private final LocalDate LIMIT_DATE = LocalDate.from(LocalDateTime.of(1895, 12, 28, 0, 0));
     private final int LIMIT_LENGTH_OF_DESCRIPTION = 200;
 
     @GetMapping
+    @Override
     public Collection<Film> findAll() {
         log.info(FilmMessages.filmMessage(FilmMessages.CURRENT_CONDITION) + films.size());
         return films.values();
     }
 
     @PostMapping
+    @Override
     public Film create(@Valid @RequestBody Film film) {
-        validate(film,FilmMessages.INCORRECT_FILM_FORM);
+        validate(film,FilmMessages.filmMessage(FilmMessages.INCORRECT_FILM_FORM));
         film.setId(setId());
         films.put(film.getId(), film);
         log.info(FilmMessages.filmMessage(FilmMessages.FILM_SUCCESS_ADDED) + film);
@@ -37,8 +38,9 @@ public class FilmController {
     }
 
     @PutMapping
+    @Override
     public Film update(@Valid @RequestBody Film film) {
-        validate(film,FilmMessages.INCORRECT_UPDATE_FILM_FORM);
+        validate(film,FilmMessages.filmMessage(FilmMessages.INCORRECT_UPDATE_FILM_FORM));
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
             log.info(FilmMessages.filmMessage(FilmMessages.FILM_SUCCESS_UPDATED) + film);
@@ -49,25 +51,11 @@ public class FilmController {
         return film;
     }
 
-    public int setId() {
-        id += 1;
-        return id;
-    }
-
-
-    public void validate (Film film,FilmMessages message ){
-        if (!filmValidation(film)) {
-            log.debug(FilmMessages.filmMessage(message));
-            throw new ValidationException(FilmMessages.filmMessage(message));
-        }
-    }
-
-
-    public boolean filmValidation(Film film) {
+    @Override
+    public boolean validation(Film film) {
         return  !(film.getName() == null || film.getName().isBlank() ||
                 film.getDescription().length() > LIMIT_LENGTH_OF_DESCRIPTION ||
                 film.getReleaseDate().isBefore(LIMIT_DATE)||
                 film.getDuration() < 0);
     }
 }
-
