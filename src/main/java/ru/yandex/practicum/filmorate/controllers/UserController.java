@@ -36,7 +36,7 @@ public class UserController extends Controller<User>{
 
     @PutMapping
     @Override
-    public User update( @RequestBody User user) {
+    public User update( @Valid @RequestBody User user) {
         super.update(user);
         fixVoidName(user);
         return user;
@@ -44,12 +44,7 @@ public class UserController extends Controller<User>{
 
     @Override
     public boolean validation(User user) {
-        return !(user.getLogin() == null ||
-                user.getLogin().isBlank()||
-                user.getEmail() == null ||
-                user.getEmail().isBlank()||
-                !user.getEmail().contains("@") ||
-                user.getBirthday().isAfter(LocalDate.now()));
+        return !(user.getBirthday().isAfter(LocalDate.now()));
     }
 
     public void fixVoidName(User user){

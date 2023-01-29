@@ -20,40 +20,6 @@ class UserControllerTest {
      uc = new UserController();
 
     }
-
-    @Test
-    void createEmailTest() {
-        User user = new User(10,"idram.ru","bademus","vadique", LocalDate.now().minusYears(33));
-        ValidationException ex = assertThrows(ValidationException.class, new Executable() {
-            @Override
-            public void execute() {
-                uc.create(user);
-            }
-        });
-        assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
-
-        User user2 = new User(10,"","bademus","vadique", LocalDate.now().minusYears(33));
-         ex = assertThrows(ValidationException.class, new Executable() {
-            @Override
-            public void execute() {
-                uc.create(user2);
-            }
-        });
-        assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
-    }
-
-    @Test
-    void createLoginTest() {
-        User user = new User(10,"id@ram.ru"," ","vadique", LocalDate.now().minusYears(33));
-        ValidationException ex = assertThrows(ValidationException.class, new Executable() {
-            @Override
-            public void execute() {
-                uc.create(user);
-            }
-        });
-        assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
-    }
-
     @Test
     void createVoidNameTest() {
         int id = 1;
@@ -73,44 +39,6 @@ class UserControllerTest {
         });
         assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
     }
-
-    @Test
-    void updateEmailTest() {
-        User usr = new User(10,"id@ram.ru","bademus","vadique", LocalDate.now().minusYears(33));
-        uc.create(usr);
-        User user = new User(10,"idram.ru","bademus","vadique", LocalDate.now().minusYears(33));
-        ValidationException ex = assertThrows(ValidationException.class, new Executable() {
-            @Override
-            public void execute() {
-                uc.update(user);
-            }
-        });
-        assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
-
-        User user2 = new User(10,"","bademus","vadique", LocalDate.now().minusYears(33));
-        ex = assertThrows(ValidationException.class, new Executable() {
-            @Override
-            public void execute() {
-                uc.update(user2);
-            }
-        });
-        assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
-    }
-
-    @Test
-    void updateLoginTest() {
-        User usr = new User(10,"id@ram.ru","bademus","vadique", LocalDate.now().minusYears(33));
-        uc.create(usr);
-        User user = new User(10,"id@ram.ru"," ","vadique", LocalDate.now().minusYears(33));
-        ValidationException ex = assertThrows(ValidationException.class, new Executable() {
-            @Override
-            public void execute() {
-                uc.update(user);
-            }
-        });
-        assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
-    }
-
     @Test
     void updateVoidNameTest() {
         User usr = new User(1,"id@ram.ru","bademus","", LocalDate.now().minusYears(33));

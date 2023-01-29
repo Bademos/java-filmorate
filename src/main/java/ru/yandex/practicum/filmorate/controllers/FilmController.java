@@ -43,9 +43,7 @@ public class FilmController extends Controller<Film>{
 
     @Override
     public boolean validation(Film film) {
-        return  !(film.getName() == null || film.getName().isBlank() ||
-                film.getDescription().length() > LIMIT_LENGTH_OF_DESCRIPTION ||
-                film.getReleaseDate().isBefore(LIMIT_DATE)||
-                film.getDuration() < 0);
+        return  !(film.getDescription().length() > LIMIT_LENGTH_OF_DESCRIPTION ||
+                film.getReleaseDate().isBefore(LIMIT_DATE));
     }
 }

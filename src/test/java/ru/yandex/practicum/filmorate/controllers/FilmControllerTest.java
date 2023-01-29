@@ -22,55 +22,7 @@ class  FilmControllerTest {
         fc = new FilmController();
     }
 
-    @Test
-    void createVoidNameTest() {
-        Film film = Film.builder().id(190).name("").
-                description("impudicus").releaseDate(LocalDate.now().
-                minusYears(14)).duration(180).build();
-        assertEquals(true, fc.findAll().isEmpty());
 
-        ValidationException ex = assertThrows(ValidationException.class, new Executable() {
-            @Override
-            public void execute() {
-                fc.create(film);
-            }
-        });
-        assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
-
-    }
-
-    @Test
-    void createLongDescriptionTest() {
-        String description = "MACBETH\n" +
-                "Stay, you imperfect speakers, tell me more:\n" +
-                "By Sinel's death I know I am thane of Glamis;\n" +
-                "But how of Cawdor? the thane of Cawdor lives,\n" +
-                "A prosperous gentleman; and to be king\n" +
-                "Stands not within the prospect of belief,\n" +
-                "No more than to be Cawdor. Say from whence\n" +
-                "You owe this strange intelligence? or why\n" +
-                "Upon this blasted heath you stop our way\n" +
-                "With such prophetic greeting? Speak, I charge you.\n" +
-                "Witches vanish\n" +
-                "\n" +
-                "BANQUO\n" +
-                "The earth hath bubbles, as the water has,\n" +
-                "And these are of them. Whither are they vanish'd?\n" +
-                "MACBETH\n" +
-                "Into the air; and what seem'd corporal melted\n" +
-                "As breath into the wind. Would they had stay'd!";
-
-        Film film = new Film(191,"MACBETH",description, LocalDate.now().minusYears(14),180);
-
-        ValidationException ex = assertThrows(ValidationException.class, new Executable() {
-            @Override
-            public void execute() {
-                fc.create(film);
-            }
-        });
-        assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
-
-    }
     @Test
     void createOldReleaseTest() {
         Film film = new Film(192,"Movie","impudicus", LocalDate.now().minusYears(200),180);
@@ -84,68 +36,10 @@ class  FilmControllerTest {
         assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
     }
 
-    @Test
-    void createNegativeDurationTest() {
-        Film film = new Film(193,"Movie","impudicus", LocalDate.now().minusYears(20),-180);
 
-        ValidationException ex = assertThrows(ValidationException.class, new Executable() {
-            @Override
-            public void execute() {
-                fc.create(film);
-            }
-        });
-        assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
-    }
 
-    @Test
-    void updateVoidNameTest() {
-        Film film = new Film(190,"Movie","impudicus", LocalDate.now().minusYears(14),180);
-        fc.create(film);
-        Film filmUpd =  new Film(190,"","impudicus", LocalDate.now().minusYears(14),180);
-        ValidationException ex = assertThrows(ValidationException.class, new Executable() {
-            @Override
-            public void execute() {
-                fc.update(filmUpd);
-            }
-        });
 
-        assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
-    }
 
-    @Test
-    void updateLongDescriptionTest() {
-        String description = "MACBETH\n" +
-                "Stay, you imperfect speakers, tell me more:\n" +
-                "By Sinel's death I know I am thane of Glamis;\n" +
-                "But how of Cawdor? the thane of Cawdor lives,\n" +
-                "A prosperous gentleman; and to be king\n" +
-                "Stands not within the prospect of belief,\n" +
-                "No more than to be Cawdor. Say from whence\n" +
-                "You owe this strange intelligence? or why\n" +
-                "Upon this blasted heath you stop our way\n" +
-                "With such prophetic greeting? Speak, I charge you.\n" +
-                "Witches vanish\n" +
-                "\n" +
-                "BANQUO\n" +
-                "The earth hath bubbles, as the water has,\n" +
-                "And these are of them. Whither are they vanish'd?\n" +
-                "MACBETH\n" +
-                "Into the air; and what seem'd corporal melted\n" +
-                "As breath into the wind. Would they had stay'd!";
-
-        Film film = new Film(191,"MACBETH","Play", LocalDate.now().minusYears(14),180);
-        fc.create(film);
-
-        Film filmUpd = new Film(191,"MACBETH",description, LocalDate.now().minusYears(14),180);
-
-        ValidationException ex = assertThrows(ValidationException.class, new Executable() {
-            @Override
-            public void execute() {
-                fc.update(filmUpd);
-            }
-        });
-        assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
-    }
 
     @Test
     void updateOldReleaseTest() {
@@ -162,18 +56,5 @@ class  FilmControllerTest {
         assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
     }
 
-    @Test
-    void updateNegativeDurationTest() {
-        Film film = new Film(193,"Movie","impudicus", LocalDate.now().minusYears(20),180);
-        fc.create(film);
-        Film filmUpd = new Film(193,"Movie","impudicus", LocalDate.now().minusYears(20),-180);
 
-        ValidationException ex = assertThrows(ValidationException.class, new Executable() {
-            @Override
-            public void execute() {
-                fc.update(filmUpd);
-            }
-        });
-        assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
-    }
 }
