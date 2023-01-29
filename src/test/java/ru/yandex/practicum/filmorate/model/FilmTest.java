@@ -97,6 +97,7 @@ class FilmTest {
                 new ParameterizedTypeReference<Collection<Film>>() {
                 });
         System.out.println(response2.getBody());
+        System.out.println("hrllo");
 
     }
     @Test
