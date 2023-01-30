@@ -14,18 +14,18 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class  FilmControllerTest {
+class FilmControllerTest {
 
     FilmController fc;
+
     @BeforeEach
     public void start() {
         fc = new FilmController();
     }
 
-
     @Test
     void createOldReleaseTest() {
-        Film film = new Film(192,"Movie","impudicus", LocalDate.now().minusYears(200),180);
+        Film film = new Film(192, "Movie", "impudicus", LocalDate.now().minusYears(200), 180);
 
         ValidationException ex = assertThrows(ValidationException.class, new Executable() {
             @Override
@@ -36,16 +36,11 @@ class  FilmControllerTest {
         assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
     }
 
-
-
-
-
-
     @Test
     void updateOldReleaseTest() {
-        Film film = new Film(192,"Movie","impudicus", LocalDate.now().minusYears(20),180);
+        Film film = new Film(192, "Movie", "impudicus", LocalDate.now().minusYears(20), 180);
         fc.create(film);
-        Film filmUpd = new Film(192,"Movie","impudicus", LocalDate.now().minusYears(200),180);
+        Film filmUpd = new Film(192, "Movie", "impudicus", LocalDate.now().minusYears(200), 180);
 
         ValidationException ex = assertThrows(ValidationException.class, new Executable() {
             @Override
@@ -55,6 +50,4 @@ class  FilmControllerTest {
         });
         assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
     }
-
-
 }

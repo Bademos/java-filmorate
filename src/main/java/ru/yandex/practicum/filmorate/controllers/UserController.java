@@ -16,7 +16,7 @@ import java.util.*;
 @Slf4j
 @RestController
 @RequestMapping("/users")
-public class UserController extends Controller<User>{
+public class UserController extends Controller<User> {
 
     @GetMapping
     @Override
@@ -36,7 +36,7 @@ public class UserController extends Controller<User>{
 
     @PutMapping
     @Override
-    public User update( @Valid @RequestBody User user) {
+    public User update(@Valid @RequestBody User user) {
         super.update(user);
         fixVoidName(user);
         return user;
@@ -47,7 +47,7 @@ public class UserController extends Controller<User>{
         return !(user.getBirthday().isAfter(LocalDate.now()));
     }
 
-    public void fixVoidName(User user){
+    public void fixVoidName(User user) {
         if (user.getName() == null) {
             user.setName(user.getLogin());
             listOfEntities.put(user.getId(), user);

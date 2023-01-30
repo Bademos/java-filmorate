@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class FilmTest {
@@ -38,10 +39,10 @@ class FilmTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void createVoidNameTest(){
-        Film film = new Film(190,null,"impudicus", LocalDate.now().minusYears(14),-180);
+    public void createVoidNameTest() {
+        Film film = new Film(190, null, "impudicus", LocalDate.now().minusYears(14), -180);
         ResponseEntity<Film> response = restTemplate.postForEntity("/films", film, Film.class);
-        assertEquals("400 BAD_REQUEST",response.getStatusCode().toString());
+        assertEquals("400 BAD_REQUEST", response.getStatusCode().toString());
     }
 
     @Test
@@ -69,16 +70,14 @@ class FilmTest {
                 releaseDate(LocalDate.now().minusYears(13)).duration(180).build();
 
         ResponseEntity<Film> response = restTemplate.postForEntity("/films", film, Film.class);
-        assertEquals("400 BAD_REQUEST",response.getStatusCode().toString());
-
-
+        assertEquals("400 BAD_REQUEST", response.getStatusCode().toString());
     }
 
     @Test
     void createNegativeDurationTest() {
-        Film film = new Film(193,"Movie","impudicus", LocalDate.now().minusYears(20),-180);
-            ResponseEntity<Film> response = restTemplate.postForEntity("/films", film, Film.class);
-            assertEquals("400 BAD_REQUEST",response.getStatusCode().toString());
+        Film film = new Film(193, "Movie", "impudicus", LocalDate.now().minusYears(20), -180);
+        ResponseEntity<Film> response = restTemplate.postForEntity("/films", film, Film.class);
+        assertEquals("400 BAD_REQUEST", response.getStatusCode().toString());
     }
 
     @Test
@@ -89,8 +88,7 @@ class FilmTest {
         Film film2 = new Film(1, null, "impudicus", LocalDate.now().minusYears(14), 180);
         HttpEntity<Film> entity = new HttpEntity<Film>(film2);
         ResponseEntity<Film> response2 = restTemplate.exchange("/films", HttpMethod.PUT, entity, Film.class);
-        assertEquals("400 BAD_REQUEST",response2.getStatusCode().toString());
-
+        assertEquals("400 BAD_REQUEST", response2.getStatusCode().toString());
 
 
         ResponseEntity<Collection<Film>> response3 = restTemplate.exchange("/films", HttpMethod.GET, null,
@@ -98,12 +96,12 @@ class FilmTest {
                 });
         System.out.println(response2.getBody());
         System.out.println("hrllo");
-
     }
+
     @Test
     void updateLongDescriptionTest() {
         Film film = new Film(190, "not null", "impudicus", LocalDate.now().minusYears(14), 180);
-        restTemplate.postForLocation("/films",film);
+        restTemplate.postForLocation("/films", film);
         String description = "MACBETH\n" +
                 "Stay, you imperfect speakers, tell me more:\n" +
                 "By Sinel's death I know I am thane of Glamis;\n" +
@@ -128,10 +126,7 @@ class FilmTest {
 
         HttpEntity<Film> entity = new HttpEntity<Film>(film2);
         ResponseEntity<Film> response2 = restTemplate.exchange("/films", HttpMethod.PUT, entity, Film.class);
-        assertEquals("400 BAD_REQUEST",response2.getStatusCode().toString());
-
-
-
+        assertEquals("400 BAD_REQUEST", response2.getStatusCode().toString());
     }
 
     @Test
@@ -142,8 +137,6 @@ class FilmTest {
         Film film2 = new Film(1, "nor", "impudicus", LocalDate.now().minusYears(14), -180);
         HttpEntity<Film> entity = new HttpEntity<Film>(film2);
         ResponseEntity<Film> response2 = restTemplate.exchange("/films", HttpMethod.PUT, entity, Film.class);
-        assertEquals("400 BAD_REQUEST",response2.getStatusCode().toString());
+        assertEquals("400 BAD_REQUEST", response2.getStatusCode().toString());
     }
-
-
 }

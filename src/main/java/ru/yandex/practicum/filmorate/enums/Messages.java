@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.enums;
 
-public  enum Messages {
+public enum Messages {
     INCORRECT_FORM,
     INCORRECT_UPDATE_FORM,
     IS_NOT_IN_LIST,
@@ -8,7 +8,7 @@ public  enum Messages {
     SUCCESS_ADDED,
     SUCCESS_UPDATED;
 
-    public static String message(Messages m){
+    public static String message(Messages m) {
         switch (m) {
             case CURRENT_CONDITION:
                 return "Текущее количество объектов: ";

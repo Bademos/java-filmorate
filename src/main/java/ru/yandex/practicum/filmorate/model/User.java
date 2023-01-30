@@ -15,7 +15,6 @@ import java.util.Objects;
 @Builder(toBuilder = true)
 @Data
 @AllArgsConstructor
-
 public class User extends Model {
     private int id;
     @NotBlank

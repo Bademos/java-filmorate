@@ -15,7 +15,7 @@ import java.util.*;
 @Slf4j
 @RestController
 @RequestMapping("/films")
-public class FilmController extends Controller<Film>{
+public class FilmController extends Controller<Film> {
     private static final LocalDate LIMIT_DATE = LocalDate.from(LocalDateTime.of(1895, 12, 28, 0, 0));
     private static final int LIMIT_LENGTH_OF_DESCRIPTION = 200;
 
@@ -43,7 +43,7 @@ public class FilmController extends Controller<Film>{
 
     @Override
     public boolean validation(Film film) {
-        return  !(film.getDescription().length() > LIMIT_LENGTH_OF_DESCRIPTION ||
+        return !(film.getDescription().length() > LIMIT_LENGTH_OF_DESCRIPTION ||
                 film.getReleaseDate().isBefore(LIMIT_DATE));
     }
 }

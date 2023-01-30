@@ -8,8 +8,8 @@ public enum UserMessages {
     USER_SUCCESS_ADDED,
     USER_SUCCESS_UPDATED;
 
-    public static String userMessage(UserMessages um){
-        switch (um){
+    public static String userMessage(UserMessages um) {
+        switch (um) {
             case CURRENT_USERS_CONDITION:
                 return "Текущее количество пользоваелей: ";
             case USER_IS_NOT_IN_LIST:

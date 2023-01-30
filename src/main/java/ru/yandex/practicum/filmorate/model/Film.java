@@ -17,14 +17,13 @@ import java.util.Objects;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @Data
-
-public class Film extends Model{
+public class Film extends Model {
     private int id;
     @NotBlank
     private String name;
     @Size(max = 200)
     private String description;
-    LocalDate releaseDate;
+    private LocalDate releaseDate;
     @PositiveOrZero
     private int duration;
 }

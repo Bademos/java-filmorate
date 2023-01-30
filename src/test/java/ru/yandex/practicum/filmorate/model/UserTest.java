@@ -17,6 +17,7 @@ import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserTest {
@@ -25,62 +26,62 @@ class UserTest {
 
     @Test
     void createEmailTest() {
-        User user = new User(10,"idram.ru","bademus","vadique", LocalDate.now().minusYears(33));
+        User user = new User(10, "idram.ru", "bademus", "vadique", LocalDate.now().minusYears(33));
         ResponseEntity<User> response = restTemplate.postForEntity("/users", user, User.class);
-        assertEquals("400 BAD_REQUEST",response.getStatusCode().toString());
+        assertEquals("400 BAD_REQUEST", response.getStatusCode().toString());
     }
 
     @Test
     void createLoginTest() {
-        User user = new User(10,"id@ram.ru"," ","vadique", LocalDate.now().minusYears(33));
+        User user = new User(10, "id@ram.ru", " ", "vadique", LocalDate.now().minusYears(33));
         ResponseEntity<User> response = restTemplate.postForEntity("/users", user, User.class);
-        assertEquals("400 BAD_REQUEST",response.getStatusCode().toString());
+        assertEquals("400 BAD_REQUEST", response.getStatusCode().toString());
     }
 
     @Test
     void createVoidNameTest() {
         int id = 1;
         String login = "bademus";
-        User user = new User(id,"id@ram.ru",login,null, LocalDate.now().minusYears(33));
+        User user = new User(id, "id@ram.ru", login, null, LocalDate.now().minusYears(33));
         ResponseEntity<User> response = restTemplate.postForEntity("/users", user, User.class);
-        assertEquals(login,response.getBody().getName());
+        assertEquals(login, response.getBody().getName());
     }
+
     @Test
     void createBackToFutureBirthTest() {
-        User user = new User(10,"id@ram.ru","bademus","vadique", LocalDate.now().plusYears(33));
+        User user = new User(10, "id@ram.ru", "bademus", "vadique", LocalDate.now().plusYears(33));
         ResponseEntity<User> response = restTemplate.postForEntity("/users", user, User.class);
-        assertEquals("400 BAD_REQUEST",response.getStatusCode().toString());
+        assertEquals("400 BAD_REQUEST", response.getStatusCode().toString());
     }
 
     @Test
     void updateEmailTest() {
-        User usr = new User(1,"id@ram.ru","bademus","vadique", LocalDate.now().minusYears(33));
+        User usr = new User(1, "id@ram.ru", "bademus", "vadique", LocalDate.now().minusYears(33));
         ResponseEntity<User> response = restTemplate.postForEntity("/users", usr, User.class);
 
-        User user2 = new User(1,null,"bademus","vadique", LocalDate.now().minusYears(33));
+        User user2 = new User(1, null, "bademus", "vadique", LocalDate.now().minusYears(33));
         HttpEntity<User> entity = new HttpEntity<User>(user2);
         ResponseEntity<User> response2 = restTemplate.exchange("/users", HttpMethod.PUT, entity, User.class);
-        assertEquals("400 BAD_REQUEST",response2.getStatusCode().toString());
+        assertEquals("400 BAD_REQUEST", response2.getStatusCode().toString());
     }
 
     @Test
     void updateLoginTest() {
-        User usr = new User(10,"id@ram.ru","bademus","vadique", LocalDate.now().minusYears(33));
+        User usr = new User(10, "id@ram.ru", "bademus", "vadique", LocalDate.now().minusYears(33));
         ResponseEntity<User> response = restTemplate.postForEntity("/users", usr, User.class);
-        User user = new User(10,"id@ram.ru"," ","vadique", LocalDate.now().minusYears(33));
+        User user = new User(10, "id@ram.ru", " ", "vadique", LocalDate.now().minusYears(33));
         HttpEntity<User> entity = new HttpEntity<User>(user);
         ResponseEntity<User> response2 = restTemplate.exchange("/users", HttpMethod.PUT, entity, User.class);
-        assertEquals("400 BAD_REQUEST",response2.getStatusCode().toString());
+        assertEquals("400 BAD_REQUEST", response2.getStatusCode().toString());
     }
 
     @Test
     void updateBackToFutureBirthTest() {
-        User usr = new User(10,"id@ram.ru","bademus","vadique", LocalDate.now().minusYears(33));
+        User usr = new User(10, "id@ram.ru", "bademus", "vadique", LocalDate.now().minusYears(33));
         ResponseEntity<User> response = restTemplate.postForEntity("/users", usr, User.class);
-        User user = new User(10,"id@ram.ru","bademus","vadique", LocalDate.now().plusYears(33));
+        User user = new User(10, "id@ram.ru", "bademus", "vadique", LocalDate.now().plusYears(33));
         HttpEntity<User> entity = new HttpEntity<User>(user);
         ResponseEntity<User> response2 = restTemplate.exchange("/users", HttpMethod.PUT, entity, User.class);
-        assertEquals("400 BAD_REQUEST",response2.getStatusCode().toString());
+        assertEquals("400 BAD_REQUEST", response2.getStatusCode().toString());
     }
-
 }

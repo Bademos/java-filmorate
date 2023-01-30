@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Slf4j
 public abstract class Controller<T extends Model> {
-    protected final Map<Integer,T> listOfEntities = new HashMap<>();
+    protected final Map<Integer, T> listOfEntities = new HashMap<>();
     private int id = 0;
 
     public Collection<T> findAll() {
@@ -24,18 +24,16 @@ public abstract class Controller<T extends Model> {
         return listOfEntities.values();
     }
 
-
-    public T create( T obj) {
-        validate(obj,Messages.message(Messages.INCORRECT_FORM));
+    public T create(T obj) {
+        validate(obj, Messages.message(Messages.INCORRECT_FORM));
         obj.setId(setId());
         listOfEntities.put(obj.getId(), obj);
         log.info(Messages.message(Messages.SUCCESS_ADDED) + obj);
         return obj;
     }
 
-
-    public T update( T obj) {
-        validate(obj,Messages.message(Messages.INCORRECT_UPDATE_FORM));
+    public T update(T obj) {
+        validate(obj, Messages.message(Messages.INCORRECT_UPDATE_FORM));
         if (listOfEntities.containsKey(obj.getId())) {
             listOfEntities.put(obj.getId(), obj);
             log.info(Messages.message(Messages.SUCCESS_UPDATED) + obj);
@@ -51,7 +49,7 @@ public abstract class Controller<T extends Model> {
         return id;
     }
 
-    public void validate ( T obj,String message){
+    public void validate(T obj, String message) {
         if (!validation(obj)) {
             log.debug(message);
             throw new ValidationException(message);
@@ -59,7 +57,7 @@ public abstract class Controller<T extends Model> {
     }
 
     public boolean validation(T obj) {
-        return  obj==null;
+        return false;
     }
 
     public Map<Integer, T> getListOfEntities() {
