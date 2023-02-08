@@ -40,7 +40,7 @@ class FilmTest {
 
     @Test
     public void createVoidNameTest() {
-        Film film = new Film(190, null, "impudicus", LocalDate.now().minusYears(14), -180);
+        Film film = new Film(190, null, "impuudicus", LocalDate.now().minusYears(14), -180);
         ResponseEntity<Film> response = restTemplate.postForEntity("/films", film, Film.class);
         assertEquals("400 BAD_REQUEST", response.getStatusCode().toString());
     }
