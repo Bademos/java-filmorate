@@ -4,10 +4,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import ru.yandex.practicum.filmorate.enums.FilmMessages;
 import ru.yandex.practicum.filmorate.enums.Messages;
 import ru.yandex.practicum.filmorate.enums.Messages;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -20,7 +24,10 @@ class FilmControllerTest {
 
     @BeforeEach
     public void start() {
-        fc = new FilmController();
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        InMemoryFilmStorage filmStorage = new InMemoryFilmStorage();
+        FilmService filmService = new FilmService(filmStorage,userStorage);
+        fc = new FilmController(filmService);
     }
 
     @Test
@@ -33,7 +40,7 @@ class FilmControllerTest {
                 fc.create(film);
             }
         });
-        assertEquals(Messages.message(Messages.INCORRECT_FORM), ex.getMessage());
+        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_FILM_FORM), ex.getMessage());
     }
 
     @Test
@@ -48,6 +55,6 @@ class FilmControllerTest {
                 fc.update(filmUpd);
             }
         });
-        assertEquals(Messages.message(Messages.INCORRECT_UPDATE_FORM), ex.getMessage());
+        assertEquals(FilmMessages.filmMessage(FilmMessages.INCORRECT_UPDATE_FILM_FORM), ex.getMessage());
     }
 }

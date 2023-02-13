@@ -23,6 +23,7 @@ public class Film extends Model {
     private String name;
     @Size(max = 200)
     private String description;
+
     private LocalDate releaseDate;
     @PositiveOrZero
     private int duration;
