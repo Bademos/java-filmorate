@@ -4,13 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.enums.Messages;
 import ru.yandex.practicum.filmorate.enums.UserMessages;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -43,7 +41,7 @@ public class InMemoryUserStorage implements UserStorage {
             log.info(Messages.message(Messages.SUCCESS_UPDATED) + user);
         } else {
             log.debug(Messages.message(Messages.IS_NOT_IN_LIST));
-            throw new ValidationException(Messages.message(Messages.IS_NOT_IN_LIST));
+            throw new NotFoundException(Messages.message(Messages.IS_NOT_IN_LIST));
         }
         return user;
     }
@@ -54,7 +52,7 @@ public class InMemoryUserStorage implements UserStorage {
         if (listOfEntities.containsKey(id)) {
             user = listOfEntities.get(id);
         } else {
-            throw new ValidationException(UserMessages.
+            throw new NotFoundException(UserMessages.
                     userMessage(UserMessages.USER_IS_NOT_IN_LIST));
         }
         return listOfEntities.get(id);
@@ -72,37 +70,39 @@ public class InMemoryUserStorage implements UserStorage {
         friends.get(userId).add(friendId);
     }
 
-
+    @Override
     public void removeFriend(Integer userId, Integer friendId) {
-        if (friends.containsKey(userId)) {
+        if (friends.containsKey(userId) && friends.containsKey(friendId)) {
             friends.get(userId).remove(friendId);
             friends.get(friendId).remove(userId);
         }
     }
 
-    public Set<User> getCommonFriends(Integer userId1, Integer userId2) {
+    public List<User> getCommonFriends(Integer userId1, Integer userId2) {
         Set<User> resultSet = new HashSet<>();
-        Set<User> usSet1 = getAllFriends(listOfEntities.get(userId1));
-        Set<User> usSet2 = getAllFriends(listOfEntities.get(userId2));
+        Set<User> usSet1 = getAllFriends(userId1);
+        Set<User> usSet2 = getAllFriends(userId2);
 
         for (User user : usSet1) {
             if (usSet2.contains(user)) {
                 resultSet.add(user);
             }
         }
-        return resultSet;
+        return new ArrayList<>(resultSet);
     }
 
-    public Set<User> getAllFriends(User user) {
+    @Override
+    public Set<User> getAllFriends(Integer user) {
         Set<User> usersFriends = new HashSet<>();
-        Set<Integer> userId = friends.get(user.getId());
-        for (Integer id : userId) {
-            usersFriends.add(listOfEntities.get(id));
+        Set<Integer> userFriendsId = friends.get(user);
+        if (userFriendsId == null) {
+            return Collections.emptySet();
+        }
+        for (Integer id : userFriendsId) {
+            if (listOfEntities.containsKey(id)) {
+                usersFriends.add(listOfEntities.get(id));
+            }
         }
         return usersFriends;
-    }
-
-    public void put(Integer id, User user) {
-        listOfEntities.put(id, user);
     }
 }

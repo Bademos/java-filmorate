@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.enums.UserMessages;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -68,12 +69,12 @@ public class UserService {
 
     public List<User> getAllFriends(Integer userId) {
         checkUser(userId, userId);
-        return userStorage.getAllFriends(userStorage.getById(userId)).
+        return userStorage.getAllFriends(userId).
                 stream().sorted(Comparator.comparingInt(User::getId)).
                 collect(Collectors.toList());
     }
 
-    public Set<User> getCommonFriends(Integer user1Id, Integer user2Id) {
+    public List<User> getCommonFriends(Integer user1Id, Integer user2Id) {
         checkUser(user1Id, user2Id);
         return userStorage.getCommonFriends(user1Id, user2Id);
     }
@@ -81,7 +82,7 @@ public class UserService {
     void checkUser(Integer userId, Integer friendId) {
         if (!userStorage.getListOfEntities().containsKey(userId) ||
                 !userStorage.getListOfEntities().containsKey(friendId)) {
-            throw new ValidationException(UserMessages.userMessage(UserMessages.USER_IS_NOT_IN_LIST));
+            throw new NotFoundException(UserMessages.userMessage(UserMessages.USER_IS_NOT_IN_LIST));
         }
     }
 

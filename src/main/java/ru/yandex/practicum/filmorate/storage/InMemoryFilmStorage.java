@@ -1,13 +1,12 @@
 package ru.yandex.practicum.filmorate.storage;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.enums.FilmMessages;
 import ru.yandex.practicum.filmorate.enums.Messages;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,7 +43,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             log.info(Messages.message(Messages.SUCCESS_UPDATED) + film);
         } else {
             log.debug(Messages.message(Messages.IS_NOT_IN_LIST));
-            throw new ValidationException(Messages.message(Messages.IS_NOT_IN_LIST));
+            throw new NotFoundException(Messages.message(Messages.IS_NOT_IN_LIST));
         }
         return film;
     }
@@ -55,7 +54,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (listOfEntities.containsKey(id)) {
             film = listOfEntities.get(id);
         } else {
-            throw new ValidationException(FilmMessages.
+            throw new NotFoundException(FilmMessages.
                     filmMessage(FilmMessages.FILM_IS_NOT_IN_LIST));
         }
         return listOfEntities.get(id);
@@ -66,6 +65,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return listOfEntities;
     }
 
+    @Override
     public List<Film> getSortedFilms() {
         return filmsLikes.entrySet().stream().
                 sorted((film1, film2) -> film2.getValue().size() - film1.getValue().size()).
@@ -73,21 +73,24 @@ public class InMemoryFilmStorage implements FilmStorage {
                 collect(Collectors.toList());
     }
 
+    @Override
     public boolean addLike(Integer filmId, Integer userId) {
         checkFilmInList(filmId);
         filmsLikes.get(filmId).add(userId);
         return true;
     }
 
-    public boolean remove(Integer filmId, Integer userId) {
+    @Override
+    public boolean removeLike(Integer filmId, Integer userId) {
         checkFilmInList(filmId);
         filmsLikes.get(filmId).remove(userId);
         return true;
     }
 
+    @Override
     public void checkFilmInList(Integer filmId) {
         if (!listOfEntities.containsKey(filmId) && !filmsLikes.containsKey(filmId)) {
-            throw new ValidationException(FilmMessages.filmMessage(FilmMessages.FILM_IS_NOT_IN_LIST));
+            throw new NotFoundException(FilmMessages.filmMessage(FilmMessages.FILM_IS_NOT_IN_LIST));
         }
     }
 }

@@ -2,14 +2,12 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.enums.FilmMessages;
 import ru.yandex.practicum.filmorate.enums.UserMessages;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.util.IdGenerator;
@@ -18,7 +16,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -63,15 +60,15 @@ public class FilmService {
 
     public void removeLike(Integer filmId, Integer userId) {
         checkLikeAction(filmId, userId);
-        filmStorage.remove(filmId, userId);
+        filmStorage.removeLike(filmId, userId);
     }
 
     public void checkLikeAction(Integer filmId, Integer userId) {
         if (!filmStorage.getListOfEntities().containsKey(filmId)) {
-            throw new ValidationException(FilmMessages.filmMessage(FilmMessages.FILM_IS_NOT_IN_LIST));
+            throw new NotFoundException(FilmMessages.filmMessage(FilmMessages.FILM_IS_NOT_IN_LIST));
         }
         if (!userStorage.getListOfEntities().containsKey(userId)) {
-            throw new ValidationException(UserMessages.userMessage(UserMessages.USER_IS_NOT_IN_LIST));
+            throw new NotFoundException(UserMessages.userMessage(UserMessages.USER_IS_NOT_IN_LIST));
         }
     }
 

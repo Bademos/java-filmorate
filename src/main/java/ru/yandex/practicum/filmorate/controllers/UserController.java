@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.After;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.enums.FilmMessages;
@@ -65,7 +67,7 @@ public class UserController extends Controller<User> {
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public Set<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+    public List<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
         return userService.getCommonFriends(id, otherId);
     }
 
