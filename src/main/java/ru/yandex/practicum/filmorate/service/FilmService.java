@@ -90,7 +90,7 @@ public class FilmService {
     public void validate(Film film, String message) {
         if (!validation(film)) {
             log.debug(message);
-            throw new RuntimeException(message);
+            throw new ValidationException(message);
         }
     }
 }
