@@ -20,12 +20,10 @@ import java.util.*;
 @RestController
 @RequestMapping("/films")
 public class FilmController extends Controller<Film> {
-    //private static final LocalDate LIMIT_DATE = LocalDate.from(LocalDateTime.of(1895, 12, 28, 0, 0));
-   // private static final int LIMIT_LENGTH_OF_DESCRIPTION = 200;
     private final FilmService filmService;
 
     @Autowired
-    public FilmController( FilmService filmService){
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
 
@@ -39,7 +37,6 @@ public class FilmController extends Controller<Film> {
     @PostMapping
     @Override
     public Film create(@Valid @RequestBody Film film) {
-        //super.create(film);
         filmService.create(film);
         log.info(FilmMessages.filmMessage(FilmMessages.FILM_SUCCESS_ADDED) + film);
         return film;
@@ -48,41 +45,27 @@ public class FilmController extends Controller<Film> {
     @PutMapping
     @Override
     public Film update(@Valid @RequestBody Film film) {
-        //super.update(film);
         filmService.update(film);
         return film;
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable Integer id,@PathVariable Integer userId ){
-        filmService.addLike(id,userId);
+    public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        filmService.addLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void removeLike(@PathVariable Integer id,@PathVariable Integer userId ){
-        filmService.removeLike(id,userId);
+    public void removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        filmService.removeLike(id, userId);
     }
 
-
-
     @GetMapping("/popular")
-    public List<Film> getPopular(@RequestParam(defaultValue = "10") Integer count)
-    {
+    public List<Film> getPopular(@RequestParam(defaultValue = "10") Integer count) {
         return filmService.getCountOfSortedFilms(count);
     }
 
     @GetMapping("/{id}")
-    public  Film getFilmById(@PathVariable Integer id){
+    public Film getFilmById(@PathVariable Integer id) {
         return filmService.getById(id);
     }
-
-
-/*
-    @Override
-    public boolean validation(Film film) {
-        return !(film.getDescription().length() > LIMIT_LENGTH_OF_DESCRIPTION ||
-                film.getReleaseDate().isBefore(LIMIT_DATE));
-    }
-
- */
 }

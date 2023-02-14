@@ -10,8 +10,16 @@ import ru.yandex.practicum.filmorate.model.ErrorResponse;
 @RestControllerAdvice
 public class ErrorHandler {
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleValidationException(final ValidationException e) {
+        return new ErrorResponse(
+                String.format("Неверно заполнена форма")
+        );
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(final ValidationException e){
+    public ErrorResponse handleRunTimeException(final RuntimeException e) {
         return new ErrorResponse(
                 String.format("Неверно заполнена форма")
         );

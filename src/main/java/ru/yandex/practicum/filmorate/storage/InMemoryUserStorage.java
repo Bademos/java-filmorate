@@ -14,12 +14,11 @@ import java.util.*;
 
 @Slf4j
 @Component
-public class InMemoryUserStorage implements UserStorage{
+public class InMemoryUserStorage implements UserStorage {
     protected final Map<Integer, User> listOfEntities;
     private final Map<Integer, Set<Integer>> friends;
 
-    public InMemoryUserStorage(){
-
+    public InMemoryUserStorage() {
         this.listOfEntities = new HashMap<>();
         this.friends = new HashMap<>();
     }
@@ -27,13 +26,15 @@ public class InMemoryUserStorage implements UserStorage{
     @Override
     public Collection<User> findAll() {
         log.info(Messages.message(Messages.CURRENT_CONDITION) + listOfEntities.size());
-        return listOfEntities.values();    }
+        return listOfEntities.values();
+    }
 
     @Override
     public User create(User user) {
         listOfEntities.put(user.getId(), user);
-        //log.info(Messages.message(Messages.SUCCESS_ADDED) + user);
-        return user;    }
+        log.info(Messages.message(Messages.SUCCESS_ADDED) + user);
+        return user;
+    }
 
     @Override
     public User update(User user) {
@@ -50,9 +51,9 @@ public class InMemoryUserStorage implements UserStorage{
     @Override
     public User getById(Integer id) {
         User user;
-        if (listOfEntities.containsKey(id)){
+        if (listOfEntities.containsKey(id)) {
             user = listOfEntities.get(id);
-        }else{
+        } else {
             throw new ValidationException(UserMessages.
                     userMessage(UserMessages.USER_IS_NOT_IN_LIST));
         }
@@ -64,46 +65,44 @@ public class InMemoryUserStorage implements UserStorage{
         return listOfEntities;
     }
 
-    public User addFriend(Integer userId, Integer friendId){
-        if(!friends.containsKey(userId)){
-            friends.put(userId,new HashSet<>());
+    public void addFriend(Integer userId, Integer friendId) {
+        if (!friends.containsKey(userId)) {
+            friends.put(userId, new HashSet<>());
         }
         friends.get(userId).add(friendId);
-        addFriend(friendId,userId);
-        return listOfEntities.get(friendId);
     }
 
 
-    public User removeFriend(Integer userId, Integer friendId){
-        if(friends.containsKey(userId)) {
+    public void removeFriend(Integer userId, Integer friendId) {
+        if (friends.containsKey(userId)) {
             friends.get(userId).remove(friendId);
+            friends.get(friendId).remove(userId);
         }
-        return listOfEntities.get(friendId);
     }
 
-    public Set<User>getCommonFriends(Integer userId1, Integer userId2){
+    public Set<User> getCommonFriends(Integer userId1, Integer userId2) {
         Set<User> resultSet = new HashSet<>();
         Set<User> usSet1 = getAllFriends(listOfEntities.get(userId1));
         Set<User> usSet2 = getAllFriends(listOfEntities.get(userId2));
 
-        for (User user: usSet1){
-            if (usSet2.contains(user)){
+        for (User user : usSet1) {
+            if (usSet2.contains(user)) {
                 resultSet.add(user);
             }
         }
         return resultSet;
     }
 
-    public Set<User>getAllFriends(User user){
+    public Set<User> getAllFriends(User user) {
         Set<User> usersFriends = new HashSet<>();
         Set<Integer> userId = friends.get(user.getId());
-        for (Integer id : userId){
+        for (Integer id : userId) {
             usersFriends.add(listOfEntities.get(id));
         }
         return usersFriends;
     }
 
-    public void put(Integer id, User user){
-        listOfEntities.put(id,user);
+    public void put(Integer id, User user) {
+        listOfEntities.put(id, user);
     }
 }

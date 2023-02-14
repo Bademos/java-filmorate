@@ -15,7 +15,10 @@ import ru.yandex.practicum.filmorate.util.IdGenerator;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Service
@@ -25,17 +28,16 @@ public class UserService {
     final private IdGenerator idGenerator;
 
     @Autowired
-    public UserService(InMemoryUserStorage userStorage){
+    public UserService(InMemoryUserStorage userStorage) {
         this.userStorage = userStorage;
         this.idGenerator = new IdGenerator();
     }
 
-    public Collection<User> findAll(){
-
+    public Collection<User> findAll() {
         return userStorage.findAll();
     }
 
-    public User create(User user){
+    public User create(User user) {
         validate(user, UserMessages.userMessage(UserMessages.INCORRECT_USER_FORM));
         String name = fixVoidName(user);
         user.setName(name);
@@ -43,40 +45,42 @@ public class UserService {
         return userStorage.create(user);
     }
 
-    public User update(User user){
+    public User update(User user) {
         validate(user, UserMessages.userMessage(UserMessages.INCORRECT_UPDATE_USER_FORM));
         String name = fixVoidName(user);
         user.setName(name);
         return userStorage.update(user);
     }
 
-    public User getById(Integer id){
+    public User getById(Integer id) {
         return userStorage.getById(id);
     }
 
-    public User addFriend(Integer userId, Integer friendId){
-        checkUser(userId,friendId);
-        return userStorage.addFriend(userId,friendId);
-    }
-
-    public User removeFriend(Integer userId, Integer friendId){
+    public void addFriend(Integer userId, Integer friendId) {
         checkUser(userId, friendId);
-        return userStorage.removeFriend(userId,friendId);
+        userStorage.addFriend(userId, friendId);
+        userStorage.addFriend(friendId, userId);
     }
 
-    public Set<User> getAllFriends(Integer userId){
-        checkUser(userId,userId);
-        return userStorage.getAllFriends(userStorage.getById(userId));
+    public void removeFriend(Integer userId, Integer friendId) {
+        checkUser(userId, friendId);
     }
 
-    public Set<User> getCommonFriends(Integer user1Id, Integer user2Id){
-        checkUser(user1Id,user2Id);
+    public List<User> getAllFriends(Integer userId) {
+        checkUser(userId, userId);
+        return userStorage.getAllFriends(userStorage.getById(userId)).
+                stream().sorted(Comparator.comparingInt(User::getId)).
+                collect(Collectors.toList());
+    }
+
+    public Set<User> getCommonFriends(Integer user1Id, Integer user2Id) {
+        checkUser(user1Id, user2Id);
         return userStorage.getCommonFriends(user1Id, user2Id);
     }
 
-    void checkUser(Integer userId, Integer friendId){
-        if (!userStorage.getListOfEntities().containsKey(userId)||
-        !userStorage.getListOfEntities().containsKey(friendId)){
+    void checkUser(Integer userId, Integer friendId) {
+        if (!userStorage.getListOfEntities().containsKey(userId) ||
+                !userStorage.getListOfEntities().containsKey(friendId)) {
             throw new ValidationException(UserMessages.userMessage(UserMessages.USER_IS_NOT_IN_LIST));
         }
     }
@@ -93,7 +97,7 @@ public class UserService {
     }
 
     public String fixVoidName(User user) {
-        if (user.getName() == null) {
+        if (user.getName().isBlank()) {
             user.setName(user.getLogin());
             return user.getLogin();
         }

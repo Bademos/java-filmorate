@@ -4,6 +4,6 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 
-public interface UserStorage extends Storage<User>{
-    public User addFriend(Integer userId, Integer friendId);
+public interface UserStorage extends Storage<User> {
+    public void addFriend(Integer userId, Integer friendId);
 }

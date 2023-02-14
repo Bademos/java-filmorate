@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class InMemoryFilmStorage implements FilmStorage{
+public class InMemoryFilmStorage implements FilmStorage {
     protected final Map<Integer, Film> listOfEntities;
     private final Map<Integer, Set<Integer>> filmsLikes;
 
-    public InMemoryFilmStorage(){
+    public InMemoryFilmStorage() {
 
         this.listOfEntities = new HashMap<>();
         this.filmsLikes = new HashMap<>();
@@ -25,15 +25,17 @@ public class InMemoryFilmStorage implements FilmStorage{
 
     @Override
     public Collection<Film> findAll() {
-        //log.info(Messages.message(Messages.CURRENT_CONDITION) + listOfEntities.size());
-        return listOfEntities.values();    }
+        log.info(Messages.message(Messages.CURRENT_CONDITION) + listOfEntities.size());
+        return listOfEntities.values();
+    }
 
     @Override
     public Film create(Film film) {
         listOfEntities.put(film.getId(), film);
-        filmsLikes.put(film.getId(),new HashSet<>());
+        filmsLikes.put(film.getId(), new HashSet<>());
         log.info(Messages.message(Messages.SUCCESS_ADDED) + film);
-        return film;    }
+        return film;
+    }
 
     @Override
     public Film update(Film film) {
@@ -50,40 +52,41 @@ public class InMemoryFilmStorage implements FilmStorage{
     @Override
     public Film getById(Integer id) {
         Film film;
-        if (listOfEntities.containsKey(id)){
+        if (listOfEntities.containsKey(id)) {
             film = listOfEntities.get(id);
-        }else{
+        } else {
             throw new ValidationException(FilmMessages.
                     filmMessage(FilmMessages.FILM_IS_NOT_IN_LIST));
         }
         return listOfEntities.get(id);
     }
+
     @Override
     public Map<Integer, Film> getListOfEntities() {
         return listOfEntities;
     }
 
-    public List<Film> getSortedFilms(){
+    public List<Film> getSortedFilms() {
         return filmsLikes.entrySet().stream().
-                sorted((film1, film2) -> film2.getValue().size()-film1.getValue().size()).
-                map(film ->listOfEntities.get(film.getKey())).
+                sorted((film1, film2) -> film2.getValue().size() - film1.getValue().size()).
+                map(film -> listOfEntities.get(film.getKey())).
                 collect(Collectors.toList());
     }
 
-    public boolean addLike(Integer filmId,Integer userId){
+    public boolean addLike(Integer filmId, Integer userId) {
         checkFilmInList(filmId);
         filmsLikes.get(filmId).add(userId);
         return true;
     }
 
-    public boolean remove(Integer filmId, Integer userId){
+    public boolean remove(Integer filmId, Integer userId) {
         checkFilmInList(filmId);
         filmsLikes.get(filmId).remove(userId);
         return true;
     }
 
-    public void checkFilmInList(Integer filmId){
-        if (!listOfEntities.containsKey(filmId) && !filmsLikes.containsKey(filmId)){
+    public void checkFilmInList(Integer filmId) {
+        if (!listOfEntities.containsKey(filmId) && !filmsLikes.containsKey(filmId)) {
             throw new ValidationException(FilmMessages.filmMessage(FilmMessages.FILM_IS_NOT_IN_LIST));
         }
     }
