@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserService extends ServiceAbs<User> {
     @Autowired
-    protected UserService(Storage<User> storage) {
+    public UserService(Storage<User> storage) {
         super(storage);
     }
 
