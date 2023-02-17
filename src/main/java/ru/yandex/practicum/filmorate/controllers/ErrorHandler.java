@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -8,21 +9,33 @@ import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
+@Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
+        log.error(HttpStatus.BAD_REQUEST.toString() + e.getMessage());
         return new ErrorResponse(
-                String.format("Неверно заполнена форма")
+                String.format(e.getMessage())
         );
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(final NotFoundException e) {
+        log.error(HttpStatus.NOT_FOUND.toString() + e.getMessage());
         return new ErrorResponse(
-                String.format("По Вашему запросу ничего не найдено!")
+                String.format(e.getMessage())
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleRunTimeException(final RuntimeException e){
+        log.error(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+        return new ErrorResponse(
+                String.format(e.getMessage())
         );
     }
 }

@@ -1,21 +1,14 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.annotation.After;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.enums.FilmMessages;
+
 import ru.yandex.practicum.filmorate.enums.UserMessages;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.*;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.*;
 
 @Slf4j
@@ -48,40 +41,37 @@ public class UserController extends Controller<User> {
     @Override
     public User update(@Valid @RequestBody User user) {
         userService.update(user);
+        log.info(UserMessages.userMessage(UserMessages.USER_SUCCESS_UPDATED));
         return user;
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         userService.addFriend(id, friendId);
+        log.info(UserMessages.userMessage(UserMessages.ADD_USER_FRIEND));
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         userService.removeFriend(id, friendId);
+        log.info(UserMessages.userMessage(UserMessages.DELETE_USER_FRIEND));
     }
 
     @GetMapping("/{id}/friends")
     public List<User> getAllFriends(@PathVariable Integer id) {
+        log.info("Друзья пользователя с ID" + id + userService.getAllFriends(id));
         return userService.getAllFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+        log.info("Общие друзья пользователей с ID" + id + " и " + otherId + userService.getCommonFriends(id, otherId));
         return userService.getCommonFriends(id, otherId);
     }
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Integer id) {
+        log.info("Пользователь с ID " + id + " " + userService.getById(id));
         return userService.getById(id);
-    }
-
-    @Override
-    public boolean validation(User user) {
-        return !(user.getBirthday().isAfter(LocalDate.now()));
-    }
-
-    public Map<Integer, User> getUsers() {
-        return listOfEntities;
     }
 }

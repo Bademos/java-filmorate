@@ -12,7 +12,9 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -23,8 +25,16 @@ public class Film extends Model {
     private String name;
     @Size(max = 200)
     private String description;
-
+    final private Set<Integer> likes = new HashSet<>();
     private LocalDate releaseDate;
     @PositiveOrZero
     private int duration;
+
+    public void addLike(Integer id) {
+        likes.add(id);
+    }
+
+    public void deleteLike(Integer id) {
+        likes.remove(id);
+    }
 }

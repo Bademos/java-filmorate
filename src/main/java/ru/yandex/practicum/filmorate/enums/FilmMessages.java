@@ -1,12 +1,19 @@
 package ru.yandex.practicum.filmorate.enums;
 
+import com.sun.net.httpserver.Authenticator;
+
 public enum FilmMessages {
     INCORRECT_FILM_FORM,
     INCORRECT_UPDATE_FILM_FORM,
     FILM_IS_NOT_IN_LIST,
     CURRENT_CONDITION,
     FILM_SUCCESS_ADDED,
-    FILM_SUCCESS_UPDATED;
+    FILM_SUCCESS_UPDATED,
+    LIKE_SUCCESS_ADDED,
+    LIKE_SUCCESS_DELETED,
+    POPPULAR_FILMS_REQUEST;
+
+
 
     public static String filmMessage(FilmMessages fm) {
         switch (fm) {
@@ -22,6 +29,12 @@ public enum FilmMessages {
                 return "Успешно добавлен фильм: ";
             case FILM_SUCCESS_UPDATED:
                 return "Успешно обновлен фильм: ";
+            case LIKE_SUCCESS_ADDED:
+                return "Успешно добавлен лайк";
+            case LIKE_SUCCESS_DELETED:
+                return "Успешно удален лайк";
+            case POPPULAR_FILMS_REQUEST:
+                return "Запрошен список популярных фильмов";
             default:
                 return "Ошибка неизвестного рода";
         }

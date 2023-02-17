@@ -1,100 +1,87 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.Generated;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.enums.UserMessages;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
-import ru.yandex.practicum.filmorate.util.IdGenerator;
+import ru.yandex.practicum.filmorate.storage.Storage;
+
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 @Service
 @Slf4j
-public class UserService {
-    final private InMemoryUserStorage userStorage;
-    final private IdGenerator idGenerator;
-
+public class UserService extends ServiceAbs<User> {
     @Autowired
-    public UserService(InMemoryUserStorage userStorage) {
-        this.userStorage = userStorage;
-        this.idGenerator = new IdGenerator();
+    protected UserService(Storage<User> storage) {
+        super(storage);
     }
 
-    public Collection<User> findAll() {
-        return userStorage.findAll();
-    }
-
+    @Override
     public User create(User user) {
         validate(user, UserMessages.userMessage(UserMessages.INCORRECT_USER_FORM));
         String name = fixVoidName(user);
         user.setName(name);
-        user.setId(idGenerator.getId());
-        return userStorage.create(user);
+        User result = super.create(user);
+        log.info(UserMessages.userMessage(UserMessages.USER_SUCCESS_ADDED) + user);
+        return result;
     }
 
     public User update(User user) {
         validate(user, UserMessages.userMessage(UserMessages.INCORRECT_UPDATE_USER_FORM));
         String name = fixVoidName(user);
         user.setName(name);
-        return userStorage.update(user);
-    }
-
-    public User getById(Integer id) {
-        return userStorage.getById(id);
+        User result = super.update(user);
+        log.info(UserMessages.userMessage(UserMessages.USER_SUCCESS_UPDATED) + user);
+        return result;
     }
 
     public void addFriend(Integer userId, Integer friendId) {
         checkUser(userId, friendId);
-        userStorage.addFriend(userId, friendId);
-        userStorage.addFriend(friendId, userId);
+        getById(userId).addFriend(friendId);
+        getById(friendId).addFriend(userId);
     }
 
     public void removeFriend(Integer userId, Integer friendId) {
         checkUser(userId, friendId);
+        getById(userId).deleteFriend(friendId);
+        getById(friendId).deleteFriend(userId);
     }
 
     public List<User> getAllFriends(Integer userId) {
         checkUser(userId, userId);
-        return userStorage.getAllFriends(userId).
-                stream().sorted(Comparator.comparingInt(User::getId)).
+        User user = getById(userId);
+        return user.getFriends().stream().
+                map(id -> storage.getListOfEntities().get(id)).
+                sorted(Comparator.comparingInt(User::getId)).
                 collect(Collectors.toList());
     }
 
     public List<User> getCommonFriends(Integer user1Id, Integer user2Id) {
         checkUser(user1Id, user2Id);
-        return userStorage.getCommonFriends(user1Id, user2Id);
+        List<User> usSet1 = getAllFriends(user1Id);
+        List<User> usSet2 = getAllFriends(user2Id);
+        return usSet1.stream().filter(usSet2::contains).
+                sorted(Comparator.comparingInt(User::getId)).
+                collect(Collectors.toList());
     }
 
     void checkUser(Integer userId, Integer friendId) {
-        if (!userStorage.getListOfEntities().containsKey(userId) ||
-                !userStorage.getListOfEntities().containsKey(friendId)) {
+        if (!storage.getListOfEntities().containsKey(userId) ||
+                !storage.getListOfEntities().containsKey(friendId)) {
             throw new NotFoundException(UserMessages.userMessage(UserMessages.USER_IS_NOT_IN_LIST));
         }
     }
 
-    public boolean validation(User user) {
+    @Override
+    protected boolean validation(User user) {
         return !(user.getBirthday().isAfter(LocalDate.now()));
-    }
-
-    public void validate(User user, String message) {
-        if (!validation(user)) {
-            log.debug(message);
-            throw new ValidationException(message);
-        }
     }
 
     public String fixVoidName(User user) {
