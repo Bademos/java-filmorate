@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.message.Message;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.enums.Messages;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Model;
 import ru.yandex.practicum.filmorate.storage.Storage;
@@ -34,17 +36,10 @@ public abstract class ServiceAbs<T extends Model> {
     }
 
     public T getById(Integer id) {
+        log.info(Messages.message(Messages.ID_REQUEST) + id);
         return storage.getById(id);
     }
 
-    protected boolean validation(T obj) {
-        return true;
-    }
-
     protected void validate(T obj, String message) {
-        if (!validation(obj)) {
-            log.debug(message);
-            throw new ValidationException(message);
-        }
     }
 }

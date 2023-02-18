@@ -13,8 +13,6 @@ public enum FilmMessages {
     LIKE_SUCCESS_DELETED,
     POPPULAR_FILMS_REQUEST;
 
-
-
     public static String filmMessage(FilmMessages fm) {
         switch (fm) {
             case CURRENT_CONDITION:
@@ -26,15 +24,15 @@ public enum FilmMessages {
             case INCORRECT_UPDATE_FILM_FORM:
                 return "Некоректно заполнена форма обновления фильма";
             case FILM_SUCCESS_ADDED:
-                return "Успешно добавлен фильм: ";
+                return "POST: Успешно добавлен фильм: ";
             case FILM_SUCCESS_UPDATED:
-                return "Успешно обновлен фильм: ";
+                return "PUT: Успешно обновлен фильм: ";
             case LIKE_SUCCESS_ADDED:
-                return "Успешно добавлен лайк";
+                return "PUT: Успешно добавлен лайк";
             case LIKE_SUCCESS_DELETED:
-                return "Успешно удален лайк";
+                return "DELETE: Успешно удален лайк";
             case POPPULAR_FILMS_REQUEST:
-                return "Запрошен список популярных фильмов";
+                return "GET:Запрошен список популярных фильмов";
             default:
                 return "Ошибка неизвестного рода";
         }

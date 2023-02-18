@@ -32,7 +32,6 @@ public class Film extends Model {
     @JsonIgnore
     final private Set<Integer> likes = new HashSet<>();
 
-
     public void addLike(Integer id) {
         likes.add(id);
     }

@@ -6,12 +6,14 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.enums.FilmMessages;
 import ru.yandex.practicum.filmorate.enums.UserMessages;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,14 +48,16 @@ public class FilmService extends ServiceAbs<Film> {
     public void addLike(Integer filmId, Integer userId) {
         checkLikeAction(filmId, userId);
         getById(filmId).addLike(userId);
+        log.info(FilmMessages.filmMessage(FilmMessages.LIKE_SUCCESS_ADDED));
     }
 
     public void removeLike(Integer filmId, Integer userId) {
         checkLikeAction(filmId, userId);
         getById(filmId).deleteLike(userId);
+        log.info(FilmMessages.filmMessage(FilmMessages.LIKE_SUCCESS_DELETED));
     }
 
-    public void checkLikeAction(Integer filmId, Integer userId) {
+    private void checkLikeAction(Integer filmId, Integer userId) {
         if (!storage.getListOfEntities().containsKey(filmId)) {
             throw new NotFoundException(FilmMessages.filmMessage(FilmMessages.FILM_IS_NOT_IN_LIST));
         }
@@ -63,7 +67,9 @@ public class FilmService extends ServiceAbs<Film> {
     }
 
     public List<Film> getCountOfSortedFilms(Integer count) {
-        return getSortedFilms().stream().limit(count).collect(Collectors.toList());
+        List<Film> result = getSortedFilms().stream().limit(count).collect(Collectors.toList());
+        log.info(FilmMessages.filmMessage(FilmMessages.POPPULAR_FILMS_REQUEST));
+        return result;
     }
 
     public List<Film> getSortedFilms() {
@@ -73,8 +79,17 @@ public class FilmService extends ServiceAbs<Film> {
     }
 
     @Override
-    protected boolean validation(Film film) {
-        return !(film.getDescription().length() > LIMIT_LENGTH_OF_DESCRIPTION ||
-                film.getReleaseDate().isBefore(LIMIT_DATE));
+    public Collection<Film> findAll() {
+        log.info(FilmMessages.filmMessage(FilmMessages.CURRENT_CONDITION) + storage.getListOfEntities().size());
+        return super.findAll();
+    }
+
+    @Override
+    protected void validate(Film film, String message) {
+        if (film.getDescription().length() > LIMIT_LENGTH_OF_DESCRIPTION ||
+                film.getReleaseDate().isBefore(LIMIT_DATE)) {
+            log.debug(message);
+            throw new ValidationException(message);
+        }
     }
 }
