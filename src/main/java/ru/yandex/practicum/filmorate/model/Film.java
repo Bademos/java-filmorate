@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
@@ -25,10 +26,12 @@ public class Film extends Model {
     private String name;
     @Size(max = 200)
     private String description;
-    final private Set<Integer> likes = new HashSet<>();
     private LocalDate releaseDate;
     @PositiveOrZero
     private int duration;
+    @JsonIgnore
+    final private Set<Integer> likes = new HashSet<>();
+
 
     public void addLike(Integer id) {
         likes.add(id);
