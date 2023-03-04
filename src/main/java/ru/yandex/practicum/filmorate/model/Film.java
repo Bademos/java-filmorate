@@ -19,7 +19,9 @@ import java.util.Set;
 
 @Builder(toBuilder = true)
 @AllArgsConstructor
-@Data
+//@Data
+@Getter
+@Setter
 public class Film extends Model {
     private int id;
     @NotBlank
@@ -29,6 +31,7 @@ public class Film extends Model {
     private LocalDate releaseDate;
     @PositiveOrZero
     private int duration;
+    final private String genre = "nu";
     @JsonIgnore
     final private Set<Integer> likes = new HashSet<>();
 
