@@ -6,7 +6,8 @@ public enum Messages {
     IS_NOT_IN_LIST,
     CURRENT_CONDITION,
     SUCCESS_ADDED,
-    SUCCESS_UPDATED;
+    SUCCESS_UPDATED,
+    ID_REQUEST;
 
     public static String message(Messages m) {
         switch (m) {
@@ -19,9 +20,11 @@ public enum Messages {
             case INCORRECT_UPDATE_FORM:
                 return "Некоректно заполнена форма обновления объекта";
             case SUCCESS_ADDED:
-                return "Успешно добавлен объект: ";
+                return "POST: Успешно добавлен объект: ";
             case SUCCESS_UPDATED:
-                return "Успешно обновлен объект: ";
+                return "PUT: Успешно обновлен объект: ";
+            case ID_REQUEST:
+                return "GET: Запрос на объект с id:";
             default:
                 return "Ошибка неизвестного рода";
         }

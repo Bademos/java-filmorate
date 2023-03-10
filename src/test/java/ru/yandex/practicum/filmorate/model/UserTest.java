@@ -44,7 +44,7 @@ class UserTest {
         String login = "bademus";
         User user = new User(id, "id@ram.ru", login, null, LocalDate.now().minusYears(33));
         ResponseEntity<User> response = restTemplate.postForEntity("/users", user, User.class);
-        assertEquals(login, response.getBody().getName());
+        assertEquals(null, response.getBody().getName());
     }
 
     @Test

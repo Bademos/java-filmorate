@@ -1,3 +1,4 @@
+
 package ru.yandex.practicum.filmorate.model;
 
 import org.aspectj.lang.annotation.After;
@@ -40,7 +41,7 @@ class FilmTest {
 
     @Test
     public void createVoidNameTest() {
-        Film film = new Film(190, null, "impudicus", LocalDate.now().minusYears(14), -180);
+        Film film = new Film(190, null, "impuudicus", LocalDate.now().minusYears(14), -180);
         ResponseEntity<Film> response = restTemplate.postForEntity("/films", film, Film.class);
         assertEquals("400 BAD_REQUEST", response.getStatusCode().toString());
     }
@@ -139,4 +140,6 @@ class FilmTest {
         ResponseEntity<Film> response2 = restTemplate.exchange("/films", HttpMethod.PUT, entity, Film.class);
         assertEquals("400 BAD_REQUEST", response2.getStatusCode().toString());
     }
+
+
 }

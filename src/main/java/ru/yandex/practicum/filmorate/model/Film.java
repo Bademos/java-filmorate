@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
@@ -12,11 +13,15 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Builder(toBuilder = true)
 @AllArgsConstructor
-@Data
+//@Data
+@Getter
+@Setter
 public class Film extends Model {
     private int id;
     @NotBlank
@@ -26,4 +31,15 @@ public class Film extends Model {
     private LocalDate releaseDate;
     @PositiveOrZero
     private int duration;
+    final private String genre = "nu";
+    @JsonIgnore
+    final private Set<Integer> likes = new HashSet<>();
+
+    public void addLike(Integer id) {
+        likes.add(id);
+    }
+
+    public void deleteLike(Integer id) {
+        likes.remove(id);
+    }
 }

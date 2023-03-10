@@ -6,7 +6,11 @@ public enum UserMessages {
     USER_IS_NOT_IN_LIST,
     CURRENT_USERS_CONDITION,
     USER_SUCCESS_ADDED,
-    USER_SUCCESS_UPDATED;
+    USER_SUCCESS_UPDATED,
+    ADD_USER_FRIEND,
+    DELETE_USER_FRIEND,
+    COMMON_FRIENDS,
+    ALL_FRIENDS;
 
     public static String userMessage(UserMessages um) {
         switch (um) {
@@ -19,9 +23,17 @@ public enum UserMessages {
             case INCORRECT_UPDATE_USER_FORM:
                 return "Некоректно заполнена форма обновления учетной записи";
             case USER_SUCCESS_ADDED:
-                return "Успешно добавлен пользователь: ";
+                return "POST: Успешно добавлен пользователь: ";
             case USER_SUCCESS_UPDATED:
-                return "Успешно обновлена учетная запись пользователя: ";
+                return "PUT: Успешно обновлена учетная запись пользователя: ";
+            case ADD_USER_FRIEND:
+                return "PUT: Новый друг успешно добавлен";
+            case DELETE_USER_FRIEND:
+                return "DELETE: Удален друг";
+            case COMMON_FRIENDS:
+                return "GET: Общие друзья пользователей с ID";
+            case ALL_FRIENDS:
+                return "GET: Друзья пользователя с ID";
             default:
                 return "Ошибка неизвестного рода";
         }
