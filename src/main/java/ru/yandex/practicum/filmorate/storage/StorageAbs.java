@@ -52,4 +52,9 @@ public abstract class StorageAbs<T extends Model> implements Storage<T> {
         }
         return obj;
     }
+
+    @Override
+    public void delete(T obj) {
+        listOfEntities.remove(obj);
+    }
 }

@@ -15,4 +15,6 @@ public interface Storage<T extends Model> {
     public T getById(Integer id);
 
     public Map<Integer, T> getListOfEntities();
+
+    public void delete(T obj);
 }

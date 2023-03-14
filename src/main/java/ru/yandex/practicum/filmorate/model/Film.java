@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -31,7 +32,8 @@ public class Film extends Model {
     private LocalDate releaseDate;
     @PositiveOrZero
     private int duration;
-    final private String genre = "nu";
+    private List<Genre> genres;
+    private Mpa mpa;
     @JsonIgnore
     final private Set<Integer> likes = new HashSet<>();
 
@@ -41,5 +43,12 @@ public class Film extends Model {
 
     public void deleteLike(Integer id) {
         likes.remove(id);
+    }
+    public void addGenre(Genre genre){
+        genres.add(genre);
+    }
+
+    public void removeGenre(Genre genre){
+        genres.remove(genre);
     }
 }

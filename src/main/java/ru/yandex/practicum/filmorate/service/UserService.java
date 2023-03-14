@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.enums.FilmMessages;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserService extends ServiceAbs<User> {
     @Autowired
-    public UserService(Storage<User> storage) {
+    public UserService(@Qualifier("dataBase") Storage<User> storage) {
         super(storage);
     }
 
