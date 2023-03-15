@@ -20,7 +20,6 @@ public abstract class StorageAbs<T extends Model> implements Storage<T> {
 
     @Override
     public T create(T obj) {
-
         listOfEntities.put(obj.getId(), obj);
         return obj;
     }

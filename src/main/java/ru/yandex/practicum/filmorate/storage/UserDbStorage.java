@@ -14,7 +14,6 @@ import java.util.*;
 @Qualifier("dataBase")
 public class UserDbStorage extends StorageAbs<User> implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
-
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -86,7 +85,7 @@ public class UserDbStorage extends StorageAbs<User> implements UserStorage {
                 email(email).birthday(birthday).build();
     }
 
-    public Optional <User> getUserById(Integer id){
+    public Optional<User> getUserById(Integer id) {
         String sqlQuery = "SELECT * FROM films where id=?";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, id);
         if (srs.next()) {
@@ -95,6 +94,7 @@ public class UserDbStorage extends StorageAbs<User> implements UserStorage {
         }
         return Optional.empty();
     }
+
     public void sendInvite(int userID, int friendID) {
         String sqlQuery = "INSERT INTO friends(userID,friendID,statusId) " +
                 "values(?,?,?)";
@@ -132,7 +132,7 @@ public class UserDbStorage extends StorageAbs<User> implements UserStorage {
                 "WHERE users.id in ( SELECT friendId from FRIENDS " +
                 "WHERE userID in (?,?) " +
                 "AND friendID NOT in (?, ?))";
-        SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, friend1, friend2,friend1,friend2);
+        SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, friend1, friend2, friend1, friend2);
         while (srs.next()) {
             commonFriends.add(UserDbStorage.userMap(srs));
         }
@@ -144,6 +144,5 @@ public class UserDbStorage extends StorageAbs<User> implements UserStorage {
                 "userID = ? and friendsID = ?";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, userId, friendId);
         return srs.next();
-
     }
 }

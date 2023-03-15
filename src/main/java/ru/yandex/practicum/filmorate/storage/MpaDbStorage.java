@@ -12,15 +12,15 @@ import java.util.List;
 public class MpaDbStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    public MpaDbStorage(JdbcTemplate jdbcTemplate){
-
+    public MpaDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-    public Mpa getMpaById(int id){
+
+    public Mpa getMpaById(int id) {
         String sqlQuery = "SELECT * FROM RATING WHERE RATINGID=?";
-        SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery,id);
-        if(srs.next()){
-            return new Mpa(id,srs.getString("rating"));
+        SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, id);
+        if (srs.next()) {
+            return new Mpa(id, srs.getString("rating"));
         }
         return null;
     }
@@ -33,6 +33,5 @@ public class MpaDbStorage {
             listOfMpa.add(new Mpa(srs.getInt("ratingid"), srs.getString("rating")));
         }
         return listOfMpa;
-
-        }
     }
+}

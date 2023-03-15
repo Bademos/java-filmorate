@@ -1,4 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -29,13 +30,7 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
                 "values(?,?,?,?,?)";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(),
                 film.getDuration(), film.getReleaseDate(), film.getMpa().getId());
-
-            addGenre(film.getId(), film.getGenres());
-            //film.removeAllGenres();
-            //setGenres(film);
-        for(Genre genre: film.getGenres()){
-            System.out.println(genre.getId());}
-
+        addGenre(film.getId(), film.getGenres());
         return film;
     }
 
@@ -51,12 +46,9 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, id);
         if (srs.next()) {
             Film film = filmMap(srs);
-            if(!getGenres(id).isEmpty()){
-                for(Genre genre:getGenres(id)){
-                    film.addGenre(genre);
-                }
+            if (!getGenres(id).isEmpty()) {
+                film.setGenres(getGenres(film.getId()));
             }
-
             return film;
         } else {
             throw new NotFoundException("Фильм не найден");
@@ -81,12 +73,10 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery);
         List<Film> films = new ArrayList<>();
         while (srs.next()) {
-            Film film =filmMap(srs);
+            Film film = filmMap(srs);
             setGenres(film);
             films.add(film);
         }
-
-
         return films;
     }
 
@@ -108,23 +98,13 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
                 film.getMpa().getId(),
                 film.getId());
         addGenre(film.getId(), film.getGenres());
-        film.removeAllGenres();
-
-        for (Genre genre :getById(film.getId()).getGenres()){
-            film.addGenre(genre);
+        for (Genre genre : getGenres(film.getId())) {
+            System.out.println(genre.getId() + " " + genre.getName());
         }
-
-
-        return film;
+        int filmId = film.getId();
+        film.setGenres(getGenres(filmId));
+        return getById(film.getId());
     }
-
-        //film.removeAllGenres();
-        //setGenres(film);
-        /*for (Genre genre :film.getGenres()){
-            System.out.println(genre.getId()+ "ccooooo");
-        }*/
-        //return film;
-    //}
 
     public void addGenre(int filmID, Set<Genre> genres) {
         deleteAllGenresByID(filmID);
@@ -141,10 +121,9 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
 
     public Set<Genre> getGenres(int filmID) {
         Set<Integer> genresID = new HashSet<>();
-        //Set<Genre> genres = new HashSet<>();
-        Set<Genre> genres= new TreeSet<Genre>(new Comparator<Genre>() {
+        Set<Genre> genres = new TreeSet<Genre>(new Comparator<Genre>() {
             public int compare(Genre o1, Genre o2) {
-                return o1.getId()-o2.getId();
+                return o1.getId() - o2.getId();
             }
         });
         String sqlQuery = "SELECT GENREID from GENRE_FILM " +
@@ -153,26 +132,20 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
         while (srs.next()) {
             genresID.add(srs.getInt("genreid"));
         }
-        System.out.println("Size" + genresID.size());
 
-        for (Integer id : genresID){
+        for (Integer id : genresID) {
             genres.add(new Genre(id));
-        }
-
-        System.out.println(genresID);
-        for (Genre gn : genres){
-            System.out.println(gn.getId());;
         }
         return genres;
     }
 
-        private void setGenres(Film film){
-            List<Genre> genres = new ArrayList<>(getGenres(film.getId()));
-            genres.sort(Comparator.comparingInt(ListModel::getId));
-            for (Genre genre:genres){
-                film.addGenre(genre);
-            }
+    private void setGenres(Film film) {
+        List<Genre> genres = new ArrayList<>(getGenres(film.getId()));
+        genres.sort(Comparator.comparingInt(ListModel::getId));
+        for (Genre genre : genres) {
+            film.addGenre(genre);
         }
+    }
 
     public void deleteAllGenresByID(int filmID) {
         String sglQuery = "DELETE FROM GENRE_FILM WHERE film_ID=?;";
@@ -206,16 +179,21 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
         return films;
     }
 
-    public static Film filmMap(SqlRowSet srs) {
+    public Film filmMap(SqlRowSet srs) {
         int id = srs.getInt("id");
         String name = srs.getString("name");
         String description = srs.getString("description");
         int duration = srs.getInt("duration");
         LocalDate releaseDate = srs.getTimestamp("releaseDate").toLocalDateTime().toLocalDate();
         Mpa mpa = new Mpa(srs.getInt("ratingID"));
-        //Set<Genre> genres = getGenres(id);
+        Set<Genre> genres;
+        if (!getGenres(id).isEmpty()) {
+            genres = getGenres(id);
+        } else {
+            genres = new HashSet<>();
+        }
         System.out.println("oops? " + mpa);
         return Film.builder().id(id).name(name).description(description).
-                duration(duration).mpa(mpa).releaseDate(releaseDate).build();
+                duration(duration).mpa(mpa).genres(genres).releaseDate(releaseDate).build();
     }
 }

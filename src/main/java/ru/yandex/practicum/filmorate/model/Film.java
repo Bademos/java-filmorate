@@ -29,7 +29,7 @@ public class Film extends Model {
     private LocalDate releaseDate;
     @PositiveOrZero
     private int duration;
-    final private  Set<Genre> genres= new TreeSet<Genre>(new Comparator<Genre>() {
+    private  Set<Genre> genres= new TreeSet<Genre>(new Comparator<Genre>() {
         public int compare(Genre o1, Genre o2) {
             return o1.getId()-o2.getId();
         }

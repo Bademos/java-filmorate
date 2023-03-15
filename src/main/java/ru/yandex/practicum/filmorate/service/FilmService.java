@@ -32,20 +32,15 @@ public class FilmService {
 
     @Autowired
     public FilmService(@Qualifier("dataBase") FilmStorage filmStorage, @Qualifier("dataBase") UserStorage userStorage) {
-        //super(filmStorage);
         this.userStorage = userStorage;
         this.storage = filmStorage;
         this.idGenerator = new IdGenerator();
     }
-
-    //@Override
     public Film create(Film film) {
         validate(film, FilmMessages.filmMessage(FilmMessages.INCORRECT_FILM_FORM));
         film.setId(idGenerator.getId());
         System.out.println("ooops");
-        //Film result = super.create(film);
         Film result = storage.create(film);
-        //storage.addGenre(film.getId(),film.getGenres());
         log.info(FilmMessages.filmMessage(FilmMessages.FILM_SUCCESS_ADDED) + film);
         return result;
     }
@@ -54,10 +49,8 @@ public class FilmService {
         storage.addGenre(film.getId(),film.getGenres());
     }
 
-   // @Override
     public Film update(Film film) {
         validate(film, FilmMessages.filmMessage(FilmMessages.INCORRECT_UPDATE_FILM_FORM));
-        //Film result = super.update(film);
         storage.update(film);
         Film result = storage.update(film);
         Set<Genre> genres= new TreeSet<Genre>(new Comparator<Genre>() {
@@ -71,7 +64,6 @@ public class FilmService {
 
     public void addLike(Integer filmId, Integer userId) {
         checkLikeAction(filmId, userId);
-        //getById(filmId).addLike(userId);
         storage.addLike(filmId,userId);
         log.info(FilmMessages.filmMessage(FilmMessages.LIKE_SUCCESS_ADDED));
     }
@@ -84,8 +76,7 @@ public class FilmService {
 
         public void removeLike(Integer filmId, Integer userId) {
         checkLikeAction(filmId, userId);
-        //getById(filmId).deleteLike(userId);
-            // storage.removeLike(filmId, userId);
+        storage.removeLike(filmId,userId);
         log.info(FilmMessages.filmMessage(FilmMessages.LIKE_SUCCESS_DELETED));
     }
 

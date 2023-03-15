@@ -34,14 +34,13 @@ public class InMemoryFilmStorage extends StorageAbs<Film> implements FilmStorage
                 collect(Collectors.toList());
     }
 
-
     @Override
     public void addGenre(int filmID, Set<Genre> genres) {
-
+        getById(filmID).setGenres(genres);
     }
 
     @Override
     public Set<Genre> getGenres(int filmID) {
-        return null;
+        return getById(filmID).getGenres();
     }
 }
