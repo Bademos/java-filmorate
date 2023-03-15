@@ -3,16 +3,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.model.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 @Qualifier("dataBase")
@@ -25,11 +23,18 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
 
     @Override
     public Film create(Film film) {
-        super.create(film);
-        String sqlQuery = "INSERT INTO films(name,description, duration,releaseDate,ratingID)"+
+        //super.create(film);
+        System.out.println(film.getGenres());
+        String sqlQuery = "INSERT INTO films(name,description, duration,releaseDate,ratingID)" +
                 "values(?,?,?,?,?)";
-        jdbcTemplate.update(sqlQuery,film.getName(),film.getDescription(),
-                film.getDuration(),film.getReleaseDate(),film.getMpa().getId());
+        jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(),
+                film.getDuration(), film.getReleaseDate(), film.getMpa().getId());
+
+            addGenre(film.getId(), film.getGenres());
+            //film.removeAllGenres();
+            //setGenres(film);
+        for(Genre genre: film.getGenres()){
+            System.out.println(genre.getId());}
 
         return film;
     }
@@ -37,28 +42,35 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
     @Override
     public void delete(Film film) {
         String sqlQuery = "DELETE FROM films where name=?";
-       jdbcTemplate.update(sqlQuery,film.getName());
+        jdbcTemplate.update(sqlQuery, film.getName());
     }
 
     @Override
     public Film getById(Integer id) {
-        String sqlQuery = "SELECT * FROM films where id=?";
-        SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery,id);
-        if (srs.next()){
+        String sqlQuery = "SELECT * FROM films where id=? ";
+        SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, id);
+        if (srs.next()) {
             Film film = filmMap(srs);
-            return film;
-        }
+            if(!getGenres(id).isEmpty()){
+                for(Genre genre:getGenres(id)){
+                    film.addGenre(genre);
+                }
+            }
 
-            return null;
+            return film;
+        } else {
+            throw new NotFoundException("Фильм не найден");
+        }
     }
 
     public Film makeFilm(ResultSet rs) throws SQLException {
         Integer id = rs.getInt("id");
         String name = rs.getString("name");
         String description = rs.getString("description");
-        Integer  duration = rs.getInt("duration");
+        Integer duration = rs.getInt("duration");
         LocalDate releaseDate = rs.getTimestamp("releaseDate").toLocalDateTime().toLocalDate();
-
+        Film film = Film.builder().id(id).name(name).description(description).
+                duration(duration).releaseDate(releaseDate).build();
         return Film.builder().id(id).name(name).description(description).
                 duration(duration).releaseDate(releaseDate).build();
     }
@@ -68,20 +80,24 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
         String sqlQuery = "SELECT * FROM FILMS";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery);
         List<Film> films = new ArrayList<>();
-        while (srs.next()){
-            films.add(filmMap(srs));
+        while (srs.next()) {
+            Film film =filmMap(srs);
+            setGenres(film);
+            films.add(film);
         }
+
 
         return films;
     }
 
     @Override
     public Film update(Film film) {
-        String sqlQuery = "UPDATE films "+
-                "SET name=?,"+
-                "description=?, "+
-                "duration=?, "+
-                "releaseDate=?,"+
+        getById(film.getId());
+        String sqlQuery = "UPDATE films " +
+                "SET name=?," +
+                "description=?, " +
+                "duration=?, " +
+                "releaseDate=?," +
                 " ratingId=? " +
                 "WHERE id=?";
         jdbcTemplate.update(sqlQuery,
@@ -91,69 +107,115 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
                 film.getReleaseDate(),
                 film.getMpa().getId(),
                 film.getId());
+        addGenre(film.getId(), film.getGenres());
+        film.removeAllGenres();
+
+        for (Genre genre :getById(film.getId()).getGenres()){
+            film.addGenre(genre);
+        }
+
+
         return film;
     }
 
-    public void addGenre(int filmID, List<Genre> genres){
+        //film.removeAllGenres();
+        //setGenres(film);
+        /*for (Genre genre :film.getGenres()){
+            System.out.println(genre.getId()+ "ccooooo");
+        }*/
+        //return film;
+    //}
+
+    public void addGenre(int filmID, Set<Genre> genres) {
         deleteAllGenresByID(filmID);
-        String sqlQuery = "INSERT INTO GENRES_FILM(FILM_ID,GENREID) "+
+        if (genres == null || genres.isEmpty()) {
+            return;
+        }
+        String sqlQuery = "INSERT INTO GENRE_FILM(FILM_ID,GENREID) " +
                 "VALUES(?,?)";
-        for(Genre genre:genres){
+        for (Genre genre : genres) {
             jdbcTemplate.update(sqlQuery,
-                    filmID,genre.getId());
+                    filmID, genre.getId());
         }
     }
 
-    public List<Genre> getGenres(int filmID){
-        List<Genre>genres = new ArrayList<>();
-        String sqlQuery = "SELECT GENREID from GENRE_FILM "+
-                "WHERE FILMID=?";
-        SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery,filmID);
-        while (srs.next()){
-            genres.add(new Genre(srs.getInt("genreid")));
+    public Set<Genre> getGenres(int filmID) {
+        Set<Integer> genresID = new HashSet<>();
+        //Set<Genre> genres = new HashSet<>();
+        Set<Genre> genres= new TreeSet<Genre>(new Comparator<Genre>() {
+            public int compare(Genre o1, Genre o2) {
+                return o1.getId()-o2.getId();
+            }
+        });
+        String sqlQuery = "SELECT GENREID from GENRE_FILM " +
+                "WHERE FILM_ID=? order by GENREID ASC;";
+        SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, filmID);
+        while (srs.next()) {
+            genresID.add(srs.getInt("genreid"));
+        }
+        System.out.println("Size" + genresID.size());
+
+        for (Integer id : genresID){
+            genres.add(new Genre(id));
+        }
+
+        System.out.println(genresID);
+        for (Genre gn : genres){
+            System.out.println(gn.getId());;
         }
         return genres;
     }
 
-    public void deleteAllGenresByID(int filmID){
-        String sglQuery = "DELETE GENRES_VALUES WHERE genreID=?";
-        jdbcTemplate.update(sglQuery,filmID);
+        private void setGenres(Film film){
+            List<Genre> genres = new ArrayList<>(getGenres(film.getId()));
+            genres.sort(Comparator.comparingInt(ListModel::getId));
+            for (Genre genre:genres){
+                film.addGenre(genre);
+            }
+        }
+
+    public void deleteAllGenresByID(int filmID) {
+        String sglQuery = "DELETE FROM GENRE_FILM WHERE film_ID=?;";
+        jdbcTemplate.update(sglQuery, filmID);
     }
 
-    public void addLike(int filmID, int userID){
-        String sqlQuery = "INSERT INTO likes(FILMID,USERID) "+
+    public void addLike(int filmID, int userID) {
+        String sqlQuery = "INSERT INTO likes(FILMID,USERID) " +
                 "VALUES(?,?)";
-        jdbcTemplate.update(sqlQuery,filmID,userID);
+        jdbcTemplate.update(sqlQuery, filmID, userID);
     }
 
-    public void removeLike(int filmID, int userID){
-        String sqlQuery = "DELETE  likes "+
+    public void removeLike(int filmID, int userID) {
+        String sqlQuery = "DELETE  likes " +
                 "WHERE filmId=? and userID=?";
-        jdbcTemplate.update(sqlQuery,filmID,userID);
+        jdbcTemplate.update(sqlQuery, filmID, userID);
     }
 
-    public List<Film> getSortedFilms(){
+    public List<Film> getSortedFilms() {
         List<Film> films = new ArrayList<>();
-        String sqlQuery = "SELECT * from FILMS " +
-                "LEFT JOIN likes on LIKES.FILMID=FILMS.FILMID "+
-                "GROUPED BY FILMS.FILMID " +
-                "ORDERED BY COUNT(LIKES.FILMID) DESC";
+
+
+        String sqlQuery = "SELECT Films.* from FILMS " +
+                "LEFT JOIN likes on LIKES.FILMID=FILMS.ID " +
+                "GROUP BY FILMS.ID " +
+                "ORDER BY COUNT(LIKES.FILMID) DESC";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery);
-        while (srs.next()){
+        while (srs.next()) {
             films.add(filmMap(srs));
         }
         return films;
     }
 
-
-    public static Film filmMap(SqlRowSet srs){
-        Integer id = srs.getInt("id");
+    public static Film filmMap(SqlRowSet srs) {
+        int id = srs.getInt("id");
         String name = srs.getString("name");
         String description = srs.getString("description");
-        Integer  duration = srs.getInt("duration");
+        int duration = srs.getInt("duration");
         LocalDate releaseDate = srs.getTimestamp("releaseDate").toLocalDateTime().toLocalDate();
         Mpa mpa = new Mpa(srs.getInt("ratingID"));
+        //Set<Genre> genres = getGenres(id);
+        System.out.println("oops? " + mpa);
         return Film.builder().id(id).name(name).description(description).
-                duration(duration).releaseDate(releaseDate).build();
+                duration(duration).mpa(mpa).releaseDate(releaseDate).build();
     }
 }

@@ -1,11 +1,14 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 import java.util.Optional;
 
 @Getter
+@Setter
 public abstract class ListModel {
     protected int id;
     protected String name;
@@ -25,9 +28,11 @@ public abstract class ListModel {
         }
         return Optional.empty();
     }
-
+/*
     @Override
     public String toString() {
-        return "{id: "+id+",naame: "+name +"}";
+        return "{id: "+id+",name: "+name +"}";
     }
+
+ */
 }

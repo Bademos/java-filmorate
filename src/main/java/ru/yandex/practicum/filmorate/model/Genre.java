@@ -1,11 +1,15 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Builder(toBuilder=true)
 @Getter
+@Setter
 public class Genre extends ListModel{
        public final static Map<Integer,String> mp =new HashMap<Integer,String>() {{
         put(1,"Комедия");
@@ -36,4 +40,11 @@ public class Genre extends ListModel{
             this.name = name;
         }
     }
+/*
+    @Override
+    public String toString() {
+         return "{id: "+id+",name: "+name +"}";
+    }
+
+ */
 }
