@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.db;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -6,12 +6,11 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.StorageAbs;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 @Qualifier("dataBase")
@@ -24,7 +23,6 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
 
     @Override
     public Film create(Film film) {
-        //super.create(film);
         System.out.println(film.getGenres());
         String sqlQuery = "INSERT INTO films(name,description, duration,releaseDate,ratingID)" +
                 "values(?,?,?,?,?)";
@@ -54,19 +52,6 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
             throw new NotFoundException("Фильм не найден");
         }
     }
-
-    public Film makeFilm(ResultSet rs) throws SQLException {
-        Integer id = rs.getInt("id");
-        String name = rs.getString("name");
-        String description = rs.getString("description");
-        Integer duration = rs.getInt("duration");
-        LocalDate releaseDate = rs.getTimestamp("releaseDate").toLocalDateTime().toLocalDate();
-        Film film = Film.builder().id(id).name(name).description(description).
-                duration(duration).releaseDate(releaseDate).build();
-        return Film.builder().id(id).name(name).description(description).
-                duration(duration).releaseDate(releaseDate).build();
-    }
-
     @Override
     public Collection<Film> findAll() {
         String sqlQuery = "SELECT * FROM FILMS";
@@ -120,7 +105,6 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
     }
 
     public Set<Genre> getGenres(int filmID) {
-        Set<Integer> genresID = new HashSet<>();
         Set<Genre> genres = new TreeSet<Genre>(new Comparator<Genre>() {
             public int compare(Genre o1, Genre o2) {
                 return o1.getId() - o2.getId();
@@ -130,11 +114,7 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
                 "WHERE FILM_ID=? order by GENREID ASC;";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, filmID);
         while (srs.next()) {
-            genresID.add(srs.getInt("genreid"));
-        }
-
-        for (Integer id : genresID) {
-            genres.add(new Genre(id));
+            genres.add(new Genre(srs.getInt("genreid")));
         }
         return genres;
     }
@@ -166,8 +146,6 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
 
     public List<Film> getSortedFilms() {
         List<Film> films = new ArrayList<>();
-
-
         String sqlQuery = "SELECT Films.* from FILMS " +
                 "LEFT JOIN likes on LIKES.FILMID=FILMS.ID " +
                 "GROUP BY FILMS.ID " +
@@ -186,13 +164,7 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
         int duration = srs.getInt("duration");
         LocalDate releaseDate = srs.getTimestamp("releaseDate").toLocalDateTime().toLocalDate();
         Mpa mpa = new Mpa(srs.getInt("ratingID"));
-        Set<Genre> genres;
-        if (!getGenres(id).isEmpty()) {
-            genres = getGenres(id);
-        } else {
-            genres = new HashSet<>();
-        }
-        System.out.println("oops? " + mpa);
+        Set<Genre> genres = getGenres(id);
         return Film.builder().id(id).name(name).description(description).
                 duration(duration).mpa(mpa).genres(genres).releaseDate(releaseDate).build();
     }

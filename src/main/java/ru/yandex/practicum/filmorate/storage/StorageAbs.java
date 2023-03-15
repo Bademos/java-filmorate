@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.enums.Messages;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Model;
+import ru.yandex.practicum.filmorate.storage.interfaces.Storage;
 
 import java.util.Collection;
 import java.util.HashMap;

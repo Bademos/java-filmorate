@@ -1,9 +1,10 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.db;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.db.UserDbStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,5 +67,4 @@ public class FriendsDbStorage {
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, userId, friendId);
         return srs.next();
     }
-
 }

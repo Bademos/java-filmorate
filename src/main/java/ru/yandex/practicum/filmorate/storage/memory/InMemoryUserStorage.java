@@ -1,9 +1,11 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.memory;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.StorageAbs;
+import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import java.util.Comparator;
 import java.util.List;
@@ -42,15 +44,13 @@ public class InMemoryUserStorage extends StorageAbs<User> implements UserStorage
     public List<User> getCommonFriends(int friend1, int friend2) {
         List<User> usSet1 = getListOfFriends(friend1);
         List<User> usSet2 = getListOfFriends(friend2);
-        List<User> result = usSet1.stream().filter(usSet2::contains).
+        return usSet1.stream().filter(usSet2::contains).
                 sorted(Comparator.comparingInt(User::getId)).
                 collect(Collectors.toList());
-        return result;
     }
 
     @Override
     public boolean isFriend(int userId, int friendId) {
-
         return getById(userId).getFriends().contains(friendId);
     }
 }

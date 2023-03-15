@@ -17,7 +17,6 @@ import java.util.*;
 
 @Builder(toBuilder = true)
 @AllArgsConstructor
-//@Data
 @Getter
 @Setter
 public class Film extends Model {
@@ -29,11 +28,7 @@ public class Film extends Model {
     private LocalDate releaseDate;
     @PositiveOrZero
     private int duration;
-    private  Set<Genre> genres= new TreeSet<Genre>(new Comparator<Genre>() {
-        public int compare(Genre o1, Genre o2) {
-            return o1.getId()-o2.getId();
-        }
-    });
+    private Set<Genre> genres = new HashSet<>();
     private Mpa mpa;
     @JsonIgnore
     final private Set<Integer> likes = new HashSet<>();
@@ -45,12 +40,16 @@ public class Film extends Model {
     public void deleteLike(Integer id) {
         likes.remove(id);
     }
-    public void addGenre(Genre genre){
+
+    public void addGenre(Genre genre) {
         genres.add(genre);
     }
-    public void removeAllGenres(){genres.clear();}
 
-    public void removeGenre(Genre genre){
+    public void removeAllGenres() {
+        genres.clear();
+    }
+
+    public void removeGenre(Genre genre) {
         genres.remove(genre);
     }
 }

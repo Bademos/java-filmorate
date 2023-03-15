@@ -7,13 +7,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.enums.FilmMessages;
 import ru.yandex.practicum.filmorate.enums.Messages;
-import ru.yandex.practicum.filmorate.enums.UserMessages;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 import ru.yandex.practicum.filmorate.util.IdGenerator;
 
 import java.time.LocalDate;
@@ -83,13 +81,6 @@ public class FilmService {
     private void checkLikeAction(Integer filmId, Integer userId) {
        storage.getById(filmId);
        storage.getById(userId);
-        /* if (!storage.getListOfEntities().containsKey(filmId)) {
-            throw new NotFoundException(FilmMessages.filmMessage(FilmMessages.FILM_IS_NOT_IN_LIST));
-        }
-        if (!userStorage.getListOfEntities().containsKey(userId)) {
-            throw new NotFoundException(UserMessages.userMessage(UserMessages.USER_IS_NOT_IN_LIST));
-        }
-        */
     }
 
     public List<Film> getCountOfSortedFilms(Integer count) {
@@ -100,19 +91,13 @@ public class FilmService {
 
     public List<Film> getSortedFilms() {
         return storage.getSortedFilms();
-        // return storage.getListOfEntities().values().stream().
-         //       sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size()).
-           //     collect(Collectors.toList());
     }
 
-    //@Override
     public Collection<Film> findAll() {
         log.info(FilmMessages.filmMessage(FilmMessages.CURRENT_CONDITION) + storage.getListOfEntities().size());
-        //return super.findAll();
         return storage.findAll();
     }
 
-    //@Override
     protected void validate(Film film, String message) {
         if (film.getDescription().length() > LIMIT_LENGTH_OF_DESCRIPTION ||
                 film.getReleaseDate().isBefore(LIMIT_DATE)) {
