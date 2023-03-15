@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.enums.Messages;
 import ru.yandex.practicum.filmorate.enums.UserMessages;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
@@ -71,10 +72,19 @@ public class UserService {
         return result;
     }
 
+    public void affirmFriendship(Integer userId, Integer friendId){
+        if(storage.isFriend(userId,friendId)){
+            storage.affirmFriendship(userId,friendId);
+        }else {
+            throw new NotFoundException(String.format("Заявка в друзья от {} не обнаружена",friendId ));
+        }
+        log.info("Запрос на подтверждение заявки выполнен.");
+    }
+
     public List<User> getCommonFriends(Integer user1Id, Integer user2Id) {
         checkUser(user1Id, user2Id);
         List<User> result = storage.getCommonFriends(user1Id,user2Id);
-        log.info(UserMessages.userMessage(UserMessages.COMMON_FRIENDS) + user1Id + " и " + user2Id + " " + result);
+        log.info(UserMessages.userMessage(UserMessages.COMMON_FRIENDS) +" {} и {} {} ",user1Id,user2Id ,result);
         return result;
     }
 

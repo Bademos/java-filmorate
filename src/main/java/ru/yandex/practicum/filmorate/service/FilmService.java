@@ -49,13 +49,7 @@ public class FilmService {
 
     public Film update(Film film) {
         validate(film, FilmMessages.filmMessage(FilmMessages.INCORRECT_UPDATE_FILM_FORM));
-        storage.update(film);
         Film result = storage.update(film);
-        Set<Genre> genres= new TreeSet<Genre>(new Comparator<Genre>() {
-        public int compare(Genre o1, Genre o2) {
-                return o1.getId()-o2.getId();
-            }
-        });
         log.info(FilmMessages.filmMessage(FilmMessages.FILM_SUCCESS_UPDATED) + film);
         return result;
     }
@@ -65,7 +59,6 @@ public class FilmService {
         storage.addLike(filmId,userId);
         log.info(FilmMessages.filmMessage(FilmMessages.LIKE_SUCCESS_ADDED));
     }
-
 
     public Film getById(Integer id) {
         log.info(Messages.message(Messages.ID_REQUEST) + id);
