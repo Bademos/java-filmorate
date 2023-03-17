@@ -17,13 +17,14 @@ import java.util.HashSet;
 @SpringBootTest
 public class FilmDbStorageTest {
     private final FilmDbStorage filmDbStorage;
+    private final MpaDbStorage mpaDbStorage;
 
     @Test
     public void getByIdTest(){
         Film film = Film.builder().id(1).name("Godfather").
                 description("boring movie").
                 releaseDate(LocalDate.now().minusYears(40)).
-                duration(130).genres(new HashSet<>()).mpa(new Mpa(1)).build();
+                duration(130).genres(new HashSet<>()).mpa(mpaDbStorage.getMpaById(1)).build();
         filmDbStorage.create(film);
         System.out.println(film.getId());
         System.out.println(filmDbStorage.getById(1));
