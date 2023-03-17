@@ -22,7 +22,7 @@ public class FilmDbStorageTest {
     @Test
     public void getByIdTest(){
         Film film = Film.builder().id(1).name("Godfather").
-                description("boring movie").
+                description("boing movie").
                 releaseDate(LocalDate.now().minusYears(40)).
                 duration(130).genres(new HashSet<>()).mpa(mpaDbStorage.getMpaById(1)).build();
         filmDbStorage.create(film);
