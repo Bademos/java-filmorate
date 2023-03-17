@@ -52,14 +52,6 @@ public class UserController extends Controller<User> {
         userService.addFriend(id, friendId);
     }
 
-    @PutMapping("/{id}/friends/affirm/{friendId}")
-    public void affirmFriendship(@PathVariable Integer id, @PathVariable Integer friendId){
-        log.info("Запрос на подтверждение завки пользователя с id { }",friendId);
-
-    }
-
-
-
     @DeleteMapping("/{id}/friends/{friendId}")
     public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         log.info(UserControllerMessages.UserControllerMessage(UserControllerMessages.USER_REMOVE_FRIEND));

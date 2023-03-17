@@ -16,16 +16,10 @@ import java.util.stream.Collectors;
 @Qualifier("memory")
 public class InMemoryUserStorage extends StorageAbs<User> implements UserStorage {
     @Override
-    public void sendInvite(int userID, int friendID) {
+    public void addFriend(int userID, int friendID) {
         getById(friendID).addFriend(userID);
-        getById(friendID).getFriends_status().put(userID,1);
     }
 
-    @Override
-    public void affirmFriendship(int userID, int friendID) {
-        getById(friendID).addFriend(userID);
-        getById(friendID).getFriends_status().put(userID,2);
-    }
 
     @Override
     public void removeFriend(int userID, int friendID) {

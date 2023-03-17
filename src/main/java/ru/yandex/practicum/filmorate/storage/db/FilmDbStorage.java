@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
@@ -9,6 +10,9 @@ import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.StorageAbs;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -16,9 +20,13 @@ import java.util.*;
 @Qualifier("dataBase")
 public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final GenreDbStorage genreDbStorage;
+    private final MpaDbStorage mpaDbStorage;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genreDbStorage, MpaDbStorage mpaDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.genreDbStorage = genreDbStorage;
+        this.mpaDbStorage = mpaDbStorage;
     }
 
     @Override
@@ -40,7 +48,9 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
 
     @Override
     public Film getById(Integer id) {
-        String sqlQuery = "SELECT * FROM films where id=? ";
+        String sqlQuery = "SELECT * from FILMS " +
+                "join RATING on FILMS.RATINGID = RATING.RATEID " +
+                "where id =?; ";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, id);
         if (srs.next()) {
             Film film = filmMap(srs);
@@ -54,7 +64,8 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
     }
     @Override
     public Collection<Film> findAll() {
-        String sqlQuery = "SELECT * FROM FILMS";
+        String sqlQuery = "SELECT * FROM FILMS " +
+                "JOIN RATING on FILMS.RATINGID = RATING.RATEID;";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery);
         List<Film> films = new ArrayList<>();
         while (srs.next()) {
@@ -83,9 +94,6 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
                 film.getMpa().getId(),
                 film.getId());
         addGenre(film.getId(), film.getGenres());
-        for (Genre genre : getGenres(film.getId())) {
-            System.out.println(genre.getId() + " " + genre.getName());
-        }
         int filmId = film.getId();
         film.setGenres(getGenres(filmId));
         return getById(film.getId());
@@ -98,10 +106,18 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
         }
         String sqlQuery = "INSERT INTO GENRE_FILM(FILM_ID,GENREID) " +
                 "VALUES(?,?)";
-        for (Genre genre : genres) {
-            jdbcTemplate.update(sqlQuery,
-                    filmID, genre.getId());
-        }
+        List<Genre> genresList = new ArrayList<>(genres);
+        this.jdbcTemplate.batchUpdate(
+                sqlQuery,
+                new BatchPreparedStatementSetter() {
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setInt(1, filmID);
+                        ps.setInt(2, genresList.get(i).getId());
+                    }
+                    public int getBatchSize() {
+                        return genresList.size();
+                    }
+                });
     }
 
     public Set<Genre> getGenres(int filmID) {
@@ -110,11 +126,12 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
                 return o1.getId() - o2.getId();
             }
         });
-        String sqlQuery = "SELECT GENREID from GENRE_FILM " +
+        String sqlQuery = "SELECT genre_film.GENREID, genre.genre as gnr from GENRE_FILM " +
+                "JOIN genre on genre.genreid = genre_film.genreid " +
                 "WHERE FILM_ID=? order by GENREID ASC;";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, filmID);
         while (srs.next()) {
-            genres.add(new Genre(srs.getInt("genreid")));
+            genres.add(genreDbStorage.getGenreById(srs.getInt("genreid")));
         }
         return genres;
     }
@@ -145,16 +162,28 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
     }
 
     public List<Film> getSortedFilms() {
-        List<Film> films = new ArrayList<>();
-        String sqlQuery = "SELECT Films.* from FILMS " +
+        String sqlQuery = "SELECT * from FILMS " +
                 "LEFT JOIN likes on LIKES.FILMID=FILMS.ID " +
+                "JOIN rating on films.ratingid=rating.rateid " +
                 "GROUP BY FILMS.ID " +
                 "ORDER BY COUNT(LIKES.FILMID) DESC";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery);
-        while (srs.next()) {
-            films.add(filmMap(srs));
-        }
-        return films;
+
+        return jdbcTemplate.query(sqlQuery,this::makeFilm);
+    }
+
+    private Film makeFilm(ResultSet rs,int id) throws SQLException {
+        int filmId = rs.getInt("id");
+        String name = rs.getString("name");
+        String description = rs.getString("description");
+        int duration = rs.getInt("duration");
+        LocalDate releaseDate = rs.getTimestamp("releaseDate").toLocalDateTime().toLocalDate();
+        int mpaId = rs.getInt("ratingID");
+        String mpaName = rs.getString("rate");
+        Mpa mpa = new Mpa(mpaId,mpaName);
+        Set<Genre> genres = getGenres(id);
+        return Film.builder().id(filmId).name(name).description(description).
+                duration(duration).genres(genres).mpa(mpa).releaseDate(releaseDate).build();
     }
 
     public Film filmMap(SqlRowSet srs) {
@@ -163,7 +192,9 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
         String description = srs.getString("description");
         int duration = srs.getInt("duration");
         LocalDate releaseDate = srs.getTimestamp("releaseDate").toLocalDateTime().toLocalDate();
-        Mpa mpa = new Mpa(srs.getInt("ratingID"));
+        int mpaId = srs.getInt("ratingID");
+        String mpaName = srs.getString("rate");
+        Mpa mpa = new Mpa(mpaId,mpaName);
         Set<Genre> genres = getGenres(id);
         return Film.builder().id(id).name(name).description(description).
                 duration(duration).mpa(mpa).genres(genres).releaseDate(releaseDate).build();

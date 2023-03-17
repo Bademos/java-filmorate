@@ -37,7 +37,6 @@ public class FilmService {
     public Film create(Film film) {
         validate(film, FilmMessages.filmMessage(FilmMessages.INCORRECT_FILM_FORM));
         film.setId(idGenerator.getId());
-        System.out.println("ooops");
         Film result = storage.create(film);
         log.info(FilmMessages.filmMessage(FilmMessages.FILM_SUCCESS_ADDED) + film);
         return result;

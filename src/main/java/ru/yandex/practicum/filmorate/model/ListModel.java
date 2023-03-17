@@ -13,7 +13,6 @@ public abstract class ListModel {
     protected int id;
     protected String name;
 
-
     public static String getNameByID(Integer id, Map<Integer, String> mp) {
         if (mp.containsKey(id)) {
             return mp.get(id);

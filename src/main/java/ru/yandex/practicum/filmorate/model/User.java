@@ -28,7 +28,6 @@ public class User extends Model {
     private LocalDate birthday;
     @JsonIgnore
     final private Set<Integer> friends = new HashSet<>();
-    final private Map<Integer,Integer> friends_status= new HashMap<>();
 
     public void addFriend(Integer id) {
         friends.add(id);

@@ -7,7 +7,7 @@ VALUES ('Комедия'),
        ('Документальный'),
        ('Боевик');
 
-INSERT INTO  rating (rating)
+INSERT INTO  rating (rate)
 VALUES ('G'),
        ('PG'),
        ('PG-13'),

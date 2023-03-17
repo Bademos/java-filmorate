@@ -16,7 +16,6 @@ import ru.yandex.practicum.filmorate.util.IdGenerator;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @Service
@@ -50,7 +49,8 @@ public class UserService {
 
     public void addFriend(Integer userId, Integer friendId) {
         checkUser(userId, friendId);
-        storage.sendInvite(userId,friendId);
+        storage.addFriend(userId,friendId);
+
         log.info(UserMessages.userMessage(UserMessages.ADD_USER_FRIEND));
     }
 
@@ -62,23 +62,9 @@ public class UserService {
 
     public List<User> getAllFriends(Integer userId) {
         checkUser(userId, userId);
-        User user = getById(userId);
-        List<User> result = user.getFriends().stream().
-                map(id -> storage.getListOfEntities().get(id)).
-                sorted(Comparator.comparingInt(User::getId)).
-                collect(Collectors.toList());
-        result = storage.getListOfFriends(userId);
+        List<User> result = storage.getListOfFriends(userId);
         log.info(UserMessages.userMessage(UserMessages.ALL_FRIENDS) + userId + result);
         return result;
-    }
-
-    public void affirmFriendship(Integer userId, Integer friendId){
-        if(storage.isFriend(userId,friendId)){
-            storage.affirmFriendship(userId,friendId);
-        }else {
-            throw new NotFoundException(String.format("Заявка в друзья от {} не обнаружена",friendId ));
-        }
-        log.info("Запрос на подтверждение заявки выполнен.");
     }
 
     public List<User> getCommonFriends(Integer user1Id, Integer user2Id) {

@@ -97,16 +97,10 @@ public class UserDbStorage extends StorageAbs<User> implements UserStorage {
         return Optional.empty();
     }
 
-    public void sendInvite(int userID, int friendID) {
+    public void addFriend(int userID, int friendID) {
         String sqlQuery = "INSERT INTO friends(userID,friendID,statusId) " +
                 "values(?,?,?)";
         jdbcTemplate.update(sqlQuery, userID, friendID, 1);
-    }
-
-    public void affirmFriendship(int userID, int friendID) {
-        String sqlQuery = "UPDATE friends SET statusID=2 " +
-                "where userID = ? and friendID=?";
-        jdbcTemplate.update(sqlQuery, userID, friendID);
     }
 
     public void removeFriend(int userID, int friendID) {

@@ -17,10 +17,10 @@ public class MpaDbStorage {
     }
 
     public Mpa getMpaById(int id) {
-        String sqlQuery = "SELECT * FROM RATING WHERE RATINGID=?";
+        String sqlQuery = "SELECT * FROM RATING WHERE RATEID=?";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, id);
         if (srs.next()) {
-            return new Mpa(id, srs.getString("rating"));
+            return new Mpa(id, srs.getString("rate"));
         }
         return null;
     }
@@ -30,7 +30,7 @@ public class MpaDbStorage {
         String sqlQuery = "SELECT * FROM rating ";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery);
         while (srs.next()) {
-            listOfMpa.add(new Mpa(srs.getInt("ratingid"), srs.getString("rating")));
+            listOfMpa.add(new Mpa(srs.getInt("rateid"), srs.getString("rate")));
         }
         return listOfMpa;
     }
