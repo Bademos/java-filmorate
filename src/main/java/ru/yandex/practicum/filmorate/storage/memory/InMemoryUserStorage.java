@@ -20,7 +20,6 @@ public class InMemoryUserStorage extends StorageAbs<User> implements UserStorage
         getById(friendID).addFriend(userID);
     }
 
-
     @Override
     public void removeFriend(int userID, int friendID) {
         if(isFriend(userID,friendID)){

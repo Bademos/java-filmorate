@@ -7,15 +7,6 @@ import java.util.Map;
 
 @Service
 public class Mpa extends ListModel {
-    /*private static final Map<Integer, String> mp = new HashMap<>() {{
-        put(1, "G");
-        put(2, "PG");
-        put(3, "PG-13");
-        put(4, "R");
-        put(5, "NC-17");
-        put(0, null);
-    }};*/
-
     public Mpa() {
     }
 

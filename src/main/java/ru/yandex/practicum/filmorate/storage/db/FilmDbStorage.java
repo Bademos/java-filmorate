@@ -168,7 +168,6 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
                 "GROUP BY FILMS.ID " +
                 "ORDER BY COUNT(LIKES.FILMID) DESC";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery);
-
         return jdbcTemplate.query(sqlQuery,this::makeFilm);
     }
 
