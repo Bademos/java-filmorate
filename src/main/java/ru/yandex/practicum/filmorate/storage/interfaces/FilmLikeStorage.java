@@ -8,4 +8,5 @@ public interface FilmLikeStorage {
     public void addLike(int filmID,int userID);
     public void removeLike(int filmID,int userID);
     public List<Film> getSortedFilms();
+    public void checkLikeAction(Integer filmId, Integer userId);
 }

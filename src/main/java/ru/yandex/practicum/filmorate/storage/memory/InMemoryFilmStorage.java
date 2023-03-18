@@ -33,6 +33,10 @@ public class InMemoryFilmStorage extends StorageAbs<Film> implements FilmStorage
     }
 
     @Override
+    public void checkLikeAction(Integer filmId, Integer userId) {
+    }
+
+    @Override
     public void addGenre(int filmID, Set<Genre> genres) {
         getById(filmID).setGenres(genres);
     }

@@ -1,11 +1,14 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +25,18 @@ public class GenreDbStorage {
             deleteAllGenresByID(filmID);
             String sqlQuery = "INSERT INTO GENRE_FILM(FILM_ID,GENREID) "+
                     "VALUES(?,?)";
-            for(Genre genre:genres){
-                jdbcTemplate.update(sqlQuery,
-                        filmID,genre.getId());
-            }
+            List<Genre> genresList = genres;
+            this.jdbcTemplate.batchUpdate(
+                sqlQuery,
+                new BatchPreparedStatementSetter() {
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setInt(1, filmID);
+                        ps.setInt(2, genresList.get(i).getId());
+                    }
+                    public int getBatchSize() {
+                        return genresList.size();
+                    }
+                });
         }
 
         public void deleteAllGenresByID(int filmID){
