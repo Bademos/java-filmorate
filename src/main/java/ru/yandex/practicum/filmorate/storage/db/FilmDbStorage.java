@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -57,22 +58,29 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> findAll() { //только так смог (
+    public Collection<Film> findAll() {
         String sqlQuery = "SELECT * FROM FILMS " +
                 "JOIN RATING on FILMS.RATINGID = RATING.RATEID " +
                 "LEFT JOIN  GENRE_FILM on GENRE_FILM.film_id = films.id " +
                 "LEFT JOIN GENRE on Genre.GENREID = GENRE_FILM.GENREID;";
         List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm);
-        Map<Integer, List<Genre>> listsOfGenresByFilmId = jdbcTemplate.query(sqlQuery, this::makeListOfGenresByFilmId);
-        for (List<Genre> lst : listsOfGenresByFilmId.values()) {
-            if (lst.get(0).getId() == 0) {
-                lst.clear();
-            }
-        }
-        films.iterator().forEachRemaining(film -> {
-            Set<Genre> genres = new HashSet<>(listsOfGenresByFilmId.get(film.getId()));
-            film.setGenres(genres);
-        });
+        return addGenreForList(films);
+    }
+
+    private List<Film> addGenreForList(List<Film> films) {
+        Map<Integer, Film> filmsMap = films.stream()
+                .collect(Collectors.toMap(Film::getId, film -> film));
+        String inSql = String.join(", ", Collections.nCopies(filmsMap.size(), "?"));
+        final String sqlQuery = "select * " +
+                "from GENRE_FILM " +
+                "left outer join GENRE on GENRE_FILM.GENREID = GENRE.GENREID " +
+                "where GENRE_FILM.FILM_ID in (" + inSql + ") " +
+                "order by GENRE_FILM.GENREID";
+        jdbcTemplate.query(sqlQuery, (rs) -> {
+            filmsMap.get(rs.getInt("FILM_ID")).
+                    addGenre(new Genre(rs.getInt("genreid"),
+                            rs.getString("genre")));
+        }, filmsMap.keySet().toArray());
         return films;
     }
 
@@ -129,19 +137,6 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
                 "WHERE FILM_ID=? order by GENREID ASC;";
         genres.addAll(jdbcTemplate.query(sqlQuery, this::makeGenre, filmID));
         return genres;
-    }
-
-    public Map<Integer, List<Genre>> makeListOfGenresByFilmId(ResultSet rs) throws SQLException {
-        Map<Integer, List<Genre>> listMap = new HashMap<>();
-        List<Genre> genres;
-        while (rs.next()) {
-            Genre genre = makeGenre(rs, rs.getRow());
-            int filmId = rs.getInt("id");
-            genres = listMap.getOrDefault(filmId, new ArrayList<>());
-            genres.add(genre);
-            listMap.put(filmId, genres);
-        }
-        return listMap;
     }
 
     public void deleteAllGenresByID(int filmID) {
