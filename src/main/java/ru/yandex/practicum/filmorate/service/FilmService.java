@@ -71,8 +71,6 @@ public class FilmService {
     }
 
     private void checkLikeAction(Integer filmId, Integer userId) {
-       //storage.getById(filmId);
-       //userStorage.getById(userId);
         storage.checkLikeAction(filmId, userId);
     }
 

@@ -133,15 +133,12 @@ public class FilmDbStorage extends StorageAbs<Film> implements FilmStorage {
 
     public Map<Integer, List<Genre>> makeListOfGenresByFilmId(ResultSet rs) throws SQLException {
         Map<Integer, List<Genre>> listMap = new HashMap<>();
-        List<Genre> genres = new ArrayList<>();
-        Comparator<Genre> compId = Comparator.comparing(Genre::getId);
-
+        List<Genre> genres;
         while (rs.next()) {
             Genre genre = makeGenre(rs, rs.getRow());
             int filmId = rs.getInt("id");
             genres = listMap.getOrDefault(filmId, new ArrayList<>());
             genres.add(genre);
-            genres.sort(compId);
             listMap.put(filmId, genres);
         }
         return listMap;
