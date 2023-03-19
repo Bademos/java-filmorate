@@ -13,13 +13,10 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Builder(toBuilder = true)
 @AllArgsConstructor
-//@Data
 @Getter
 @Setter
 public class Film extends Model {
@@ -31,7 +28,8 @@ public class Film extends Model {
     private LocalDate releaseDate;
     @PositiveOrZero
     private int duration;
-    final private String genre = "nu";
+    private Set<Genre> genres = new HashSet<>();
+    private Mpa mpa;
     @JsonIgnore
     final private Set<Integer> likes = new HashSet<>();
 
@@ -41,5 +39,17 @@ public class Film extends Model {
 
     public void deleteLike(Integer id) {
         likes.remove(id);
+    }
+
+    public void addGenre(Genre genre) {
+        genres.add(genre);
+    }
+
+    public void removeAllGenres() {
+        genres.clear();
+    }
+
+    public void removeGenre(Genre genre) {
+        genres.remove(genre);
     }
 }

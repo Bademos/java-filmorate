@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.interfaces;
 
 import ru.yandex.practicum.filmorate.model.Model;
 
@@ -15,4 +15,6 @@ public interface Storage<T extends Model> {
     public T getById(Integer id);
 
     public Map<Integer, T> getListOfEntities();
+
+    public void delete(T obj);
 }

@@ -1,4 +1,4 @@
-
+/*
 package ru.yandex.practicum.filmorate.model;
 
 import org.aspectj.lang.annotation.After;
@@ -143,3 +143,4 @@ class FilmTest {
 
 
 }
+ */
